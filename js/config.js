@@ -6,7 +6,7 @@ Resonance.Config = {
     minOrbs: 10,
     maxOrbs: 15,
     impulses: 3,
-    requiredRatio: 0.7,
+    requiredRatio: 1,
     chargeTime: 0.45,
     orbRadius: 13,
     moveRadius: 64,
