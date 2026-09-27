@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#111b25" />
+    <meta
+      name="description"
+      content="Ein ruhiges Kettenreaktionsspiel aus Farbe, Bewegung und Resonanz."
+    />
+    <title>Resonanz — ein kleiner Impuls</title>
+    <link rel="icon" href="assets/icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="topbar">
+        <a class="wordmark" href="./" aria-label="Resonanz Startseite"
+          >resonanz<span>ENERGIE IN BEWEGUNG</span></a
+        >
+        <div class="tools">
+          <button id="sound" class="quiet" aria-pressed="true">Ton an</button
+          ><button id="pause" class="icon-button" aria-label="Pause">Ⅱ</button>
+        </div>
+      </header>
+      <section class="game-panel" aria-label="Spielfläche">
+        <div class="scorebar">
+          <span class="eyebrow">CORE</span>
+          <div class="score">
+            <span id="energy">0</span><span class="slash">/</span
+            ><span id="required">10</span>
+          </div>
+          <button
+            id="help"
+            class="help-button"
+            aria-label="Spielregeln und Orb-Fähigkeiten"
+          >
+            ?
+          </button>
+        </div>
+        <div class="progress-track"><div id="progress"></div></div>
+        <div class="arena-wrap">
+          <canvas
+            id="arena"
+            aria-label="Ziehe einen farbigen Orb innerhalb seines Bewegungsradius und lass ihn los. Maus oder Touch erforderlich."
+          ></canvas>
+        </div>
+        <footer class="game-footer">
+          <div id="impulses" class="impulses"></div>
+          <span id="impulse-label">3 Impulse übrig</span>
+          <p id="hint" aria-live="polite">Orb ziehen und loslassen</p>
+          <button id="seed-label" class="seed-button">Feld</button>
+        </footer>
+      </section>
+      <p class="desktop-note">Ein kleiner Impuls kann alles verändern.</p>
+    </main>
+    <section id="welcome" class="overlay welcome">
+      <div class="welcome-card">
+        <p class="eyebrow">EIN RUHIGES KETTENREAKTIONSSPIEL</p>
+        <div class="welcome-art" aria-hidden="true"><i></i><i></i><i></i></div>
+        <h1>resonanz</h1>
+        <p class="tagline">Bring Energie<br />in Bewegung.</p>
+        <p class="intro">
+          Sieben Arten von Orbs. Drei Impulse.<br />Ein Core, der aufleuchten
+          will.
+        </p>
+        <button id="start" class="primary">
+          Spiel starten <span aria-hidden="true">↗</span>
+        </button>
+        <p class="welcome-hint">Ziehen. Loslassen. Entfalten lassen.</p>
+        <p class="audio-note">Mit dezenten, austauschbaren Vorschauklängen.</p>
+      </div>
+    </section>
+    <div
+      id="modal"
+      class="overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Spielmenü"
+      hidden
+    >
+      <div id="modal-content" class="modal-card"></div>
+    </div>
+    <noscript
+      >Dieses Spiel benötigt JavaScript. Bitte aktiviere es in deinem
+      Browser.</noscript
+    >
+    <script src="js/config.js"></script>
+    <script src="js/orb-types.js"></script>
+    <script src="js/generator.js"></script>
+    <script src="js/state.js"></script>
+    <script src="js/physics.js"></script>
+    <script src="js/chain.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/particles.js"></script>
+    <script src="js/renderer.js"></script>
+    <script src="js/input.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/game.js"></script>
+  </body>
+</html>
