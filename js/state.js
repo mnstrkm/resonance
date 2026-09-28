@@ -14,6 +14,12 @@
             : "continue",
     },
   };
+  R.Modes.editor = {
+    ...R.Modes.resonance,
+    name: "Eigenes Feld",
+    create: () => R.LevelData.empty(),
+    requiredEnergy: (n) => n,
+  };
   R.createState = function (seed, mode = "resonance", snapshot = null) {
     const layout = snapshot || R.Modes[mode].create(seed);
     return {

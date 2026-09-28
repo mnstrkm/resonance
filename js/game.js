@@ -16,8 +16,9 @@
       }
 
       this.renderer = new R.Renderer(document.getElementById("arena"));
-      this.ui = new R.UI(this);
       this.input = new R.Input(document.getElementById("arena"), this);
+      this.editor = new R.Editor(this);
+      this.ui = new R.UI(this);
       this.chain = new R.Chain(this.state, (name, data) =>
         this.event(name, data),
       );
@@ -157,7 +158,17 @@
           }
         }
       }
-      this.renderer.draw(this.state, this.particles, this.input.drag);
+      if (this.ui.nav.route.screen === "editor") {
+        if (!this.ui.nav.route.panel) this.editor.preview.time += dt;
+        this.renderer.draw(
+          this.editor.preview,
+          { items: [], effects: [] },
+          null,
+        );
+        this.editor.draw(this.renderer);
+      } else {
+        this.renderer.draw(this.state, this.particles, this.input.drag);
+      }
       requestAnimationFrame(this.frame);
     }
   };

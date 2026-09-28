@@ -9,7 +9,7 @@
       canvas.addEventListener("pointerup", (e) => this.up(e));
       canvas.addEventListener("pointercancel", () => this.cancel());
       canvas.addEventListener("lostpointercapture", () => {
-        if (this.drag) this.cancel();
+        if (this.drag || this.game.editor?.drag) this.cancel();
       });
       window.addEventListener("keydown", (e) => {
         if (e.key === "Escape") this.cancel();
@@ -23,6 +23,14 @@
       };
     }
     down(e) {
+      if (this.game.ui.nav.pending) return;
+      if (
+        this.game.ui.nav.route.screen === "editor" &&
+        !this.game.ui.nav.route.panel
+      ) {
+        this.game.editor.down(e);
+        return;
+      }
       const s = this.game.state;
       if (
         this.drag ||
@@ -61,6 +69,10 @@
       this.game.ui.hint("Verschieben · Zurückziehen bricht ab");
     }
     move(e) {
+      if (this.game.editor.drag) {
+        this.game.editor.updateDrag(e);
+        return;
+      }
       if (!this.drag || e.pointerId !== this.drag.pointer) return;
       e.preventDefault();
       const p = this.point(e),
@@ -95,6 +107,10 @@
       );
     }
     up(e) {
+      if (this.game.editor.drag) {
+        this.game.editor.up(e);
+        return;
+      }
       if (!this.drag || e.pointerId !== this.drag.pointer) return;
       this.move(e);
       const d = this.drag;
@@ -108,6 +124,7 @@
       }
     }
     cancel() {
+      this.game.editor?.cancel();
       if (!this.drag) return;
       const id = this.drag.pointer;
       this.drag = null;
