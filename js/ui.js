@@ -84,6 +84,7 @@
     }
     renderRoute(route) {
       this.game.input.cancel();
+      document.activeElement?.blur?.();
       const home = route.screen === "home",
         editing = route.screen === "editor";
       document.body.classList.toggle("editing", editing);
@@ -109,9 +110,7 @@
         // A result is a state of this round, not a fresh history entry.
         this.nav.go({ screen: "game", panel: "result" }, true);
         return;
-      } else {
-        (home ? $("start") : $("pause")).focus({ preventScroll: true });
-      }
+      } 
       this.update();
       if (editing) this.updateEditor();
     }
@@ -147,7 +146,6 @@
       $("modal-content").className = "modal-card " + className;
       $("modal-content").innerHTML = html;
       this.modal.hidden = false;
-      this.modal.querySelector("button,input")?.focus({ preventScroll: true });
       $("modal-content").scrollTop = 0;
       this.modal.scrollTop = 0;
     }
