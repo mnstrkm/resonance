@@ -13,7 +13,7 @@
     />
     <title>Resonanz — ein kleiner Impuls</title>
     <link rel="icon" href="assets/icon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/style.css?v=0.1.2" />
   </head>
   <body>
     <main class="app">
@@ -22,8 +22,7 @@
           >resonanz<span>ENERGIE IN BEWEGUNG</span></a
         >
         <div class="tools">
-          <button id="sound" class="quiet" aria-pressed="true">Ton an</button
-          ><button id="pause" class="icon-button" aria-label="Pause">Ⅱ</button>
+          <button id="pause" class="icon-button" aria-label="Pause">Ⅱ</button>
         </div>
       </header>
       <section class="game-panel" aria-label="Spielfläche">
@@ -33,13 +32,7 @@
             <span id="energy">0</span><span class="slash">/</span
             ><span id="required">10</span>
           </div>
-          <button
-            id="help"
-            class="help-button"
-            aria-label="Spielregeln und Orb-Fähigkeiten"
-          >
-            ?
-          </button>
+
         </div>
         <div class="progress-track"><div id="progress"></div></div>
         <div class="arena-wrap">
@@ -50,12 +43,12 @@
         </div>
         <footer class="game-footer">
           <div id="impulses" class="impulses"></div>
-          <span id="impulse-label">3 Impulse übrig</span>
-          <p id="hint" aria-live="polite">Orb ziehen und loslassen</p>
-          <button id="seed-label" class="seed-button">Feld</button>
+          
+          <p id="hint" class="sr-only" aria-live="polite">Orb ziehen und loslassen</p>
+          
         </footer>
       </section>
-      <p class="desktop-note">Ein kleiner Impuls kann alles verändern.</p>
+      
     </main>
     <section id="welcome" class="overlay welcome">
       <div class="welcome-card">
@@ -71,7 +64,7 @@
           Spiel starten <span aria-hidden="true">↗</span>
         </button>
         <p class="welcome-hint">Ziehen. Loslassen. Entfalten lassen.</p>
-        <p class="version">v0.1.1</p>
+        <p class="version" data-version></p>
       </div>
     </section>
     <div
@@ -88,17 +81,17 @@
       >Dieses Spiel benötigt JavaScript. Bitte aktiviere es in deinem
       Browser.</noscript
     >
-    <script src="js/config.js"></script>
-    <script src="js/orb-types.js"></script>
-    <script src="js/generator.js"></script>
-    <script src="js/state.js"></script>
-    <script src="js/physics.js"></script>
-    <script src="js/chain.js"></script>
-    <script src="js/audio.js"></script>
-    <script src="js/particles.js"></script>
-    <script src="js/renderer.js"></script>
-    <script src="js/input.js"></script>
-    <script src="js/ui.js"></script>
-    <script src="js/game.js"></script>
+    <script src="js/config.js?v=0.1.2"></script>
+    <script src="js/orb-types.js?v=0.1.2"></script>
+    <script src="js/generator.js?v=0.1.2"></script>
+    <script src="js/state.js?v=0.1.2"></script>
+    <script src="js/physics.js?v=0.1.2"></script>
+    <script src="js/chain.js?v=0.1.2"></script>
+    <script src="js/audio.js?v=0.1.2"></script>
+    <script src="js/particles.js?v=0.1.2"></script>
+    <script src="js/renderer.js?v=0.1.2"></script>
+    <script src="js/input.js?v=0.1.2"></script>
+    <script src="js/ui.js?v=0.1.2"></script>
+    <script src="js/game.js?v=0.1.2"></script>
   </body>
 </html>
