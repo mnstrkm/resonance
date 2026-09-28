@@ -6,7 +6,7 @@ Ausgangspunkt: GitHub `mnstrkm/resonance`, Commit `4592091f6c5aea8bbff465d326ee2
 
 - JavaScript-Syntaxprüfung und `git diff --check`.
 - Integration in JSDOM mit nativem Canvas: Start, Pause, Anleitung, Einstellungen, Hauptmenü, Browser-History zurück; wiederholtes Öffnen/Schließen ohne zusätzliche Pause-Einträge.
-- Anleitung fokussiert das obere X ohne Scrollsprung; Scrollposition wird beim Öffnen auf null gesetzt.
+- Anleitung öffnet oben ohne automatische Auswahl; Scrollposition wird beim Öffnen auf null gesetzt.
 - Editor-Pointer-Eingaben: Auswahl, Platzieren, Ziehen aus der Palette, Verschieben ohne Radius, ungültige Positionen, Abbruch, einzelnes Entfernen, Zurücksetzen und Rückgängig. Antippen der über der Arena liegenden Palette platziert keinen Orb darunter.
 - Drei bzw. zwanzig platzierte Orbs ergeben Core-Ziel drei bzw. zwanzig; jeweils drei Impulse. Gültiger Spielzug kostet einen Impuls.
 - Probespiel verändert den Editor-Entwurf nicht. Retry und Rückkehr zum Editor bewahren den Ausgangsaufbau.
