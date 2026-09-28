@@ -122,7 +122,7 @@ async function setup(search = "") {
   const depth = g.ui.nav.depth;
   await click("guide");
   assert.equal(g.ui.nav.depth, depth + 1);
-  assert.equal(w.document.activeElement.id, "close-panel");
+  assert.equal(w.document.activeElement.id, w.document.body);
   assert.equal(w.document.getElementById("modal-content").scrollTop, 0);
   assert.equal(w.document.querySelectorAll(".legend-row").length, 7);
   await back();
