@@ -1,5 +1,5 @@
 (function (R) {
-  R.version = "0.1.3";
+  R.version = "0.2.0";
   const $ = (id) => document.getElementById(id);
   R.UI = class {
     constructor(game) {
