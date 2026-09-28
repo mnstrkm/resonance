@@ -14,7 +14,7 @@ Resonance.Config = {
     hitRadius: 25,
     coreEnergy: 1,
   },
-  generator: { minDistance: 42, attempts: 240, includeEveryType: true },
+  generator: { minDistance: 50, attempts: 240, includeEveryType: true },
   physics: {
     step: 1 / 120,
     maxFrame: 0.05,
@@ -44,11 +44,11 @@ Resonance.Config = {
     maxVoices: 18,
   },
   abilities: {
-    red: { radius: 106, force: 150 },
-    blue: { radius: 112, force: 125 },
-    violet: { radius: 110, force: 100, burstForce: 145, pullTime: 0.34 },
-    green: { radius: 175, force: 70, recoil: 24, speed: 420 },
-    gold: { searchTime: 0.34, travelTime: 0.3 },
+    red: { radius: 100, force: 150 },
+    blue: { radius: 100, force: 125 },
+    violet: { radius: 100, force: 100, burstForce: 145, pullTime: 0.34 },
+    green: { radius: 175, force: 70, recoil: 34, speed: 420 },
+    gold: { searchTime: 0.34, travelTime: 0.5 },
     orange: { radius: 70, multiplier: 1.55 },
   },
 };
