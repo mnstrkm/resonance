@@ -18,7 +18,7 @@ Resonance.Config = {
   physics: {
     step: 1 / 120,
     maxFrame: 0.05,
-    damping: 1.5,
+    damping: 1.9,
     restitution: 0.64,
     stopSpeed: 2.8,
     settleTime: 0.28,
