@@ -601,3 +601,209 @@ input[type="range"] {
   border-color: #e4dbc6;
   color: #1a2730;
 }
+
+/* v0.3: menu density changes are scoped to overlays; the play arena is unchanged. */
+[hidden] {
+  display: none !important;
+}
+.icon-button {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 44px;
+}
+#open-editor {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+}
+.menu-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.menu-heading h2 {
+  margin: 0;
+}
+.menu-heading .icon-button {
+  border: 0;
+  background: transparent;
+}
+.sticky-heading {
+  position: sticky;
+  top: -1px;
+  z-index: 1;
+  background: #17232e;
+  padding: 4px 0 10px;
+}
+.pause-card {
+  padding: 20px;
+}
+.pause-card .menu-heading {
+  margin-bottom: 14px;
+}
+.pause-card .speed-setting {
+  margin: 0 0 14px;
+}
+.pause-card .speed-setting > span {
+  margin-bottom: 6px;
+}
+.pause-card .speed-options button {
+  padding: 7px;
+}
+.volume-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  font-size: 12px;
+  min-height: 36px;
+  margin: 0 0 8px;
+}
+.pause-card > .primary {
+  margin-top: 8px;
+  padding: 12px 18px;
+}
+.pause-card .button-row {
+  margin-top: 8px;
+}
+.menu-links {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+.menu-links button {
+  flex: 1;
+  padding: 9px 6px;
+}
+.menu-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+.menu-foot .version {
+  margin: 0;
+  font-size: 10px;
+}
+.menu-foot .seed-button {
+  padding-left: 0;
+}
+.help-card .intro {
+  margin-top: 8px;
+}
+.help-card .sticky-heading {
+  top: -23px;
+  padding-top: 12px;
+}
+@media (max-height: 540px) and (min-width: 560px) {
+  .pause-card {
+    max-width: 600px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 20px;
+  }
+  .pause-card .menu-heading,
+  .pause-card .menu-foot {
+    grid-column: 1 / -1;
+  }
+  .pause-card .menu-heading,
+  .pause-card .speed-setting,
+  .pause-card .volume-row,
+  .pause-card .menu-links,
+  .pause-card .button-row,
+  .pause-card > .primary {
+    margin: 0;
+  }
+}
+#editor-controls {
+  position: relative;
+  margin-top: 8px;
+}
+.editor-toolbar {
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+  align-items: center;
+}
+.editor-toolbar .icon-button {
+  min-height: 44px;
+  width: 44px;
+  padding: 7px;
+  border-color: transparent;
+}
+#editor-play {
+  background: #d8cfba;
+  color: #1a2730;
+}
+.editor-status {
+  font-size: 10px;
+  color: var(--muted);
+  text-align: center;
+  margin: 5px 0 0;
+  min-height: 14px;
+}
+.orb-palette {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 3;
+  padding: 6px;
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  flex-wrap: wrap;
+  background: #17232eeb;
+  border: 1px solid #ffffff16;
+  border-radius: 16px;
+  box-shadow: 0 10px 24px #0004;
+}
+.orb-palette button {
+  padding: 0;
+  min-height: 44px;
+  width: 44px;
+  border: 1px solid transparent;
+  touch-action: none;
+}
+.orb-palette canvas {
+  width: 42px;
+  height: 42px;
+  pointer-events: none;
+}
+.orb-palette button[aria-pressed="true"] {
+  border-color: #d8cfba;
+  background: #ffffff09;
+}
+.editing .game-panel {
+  max-width: min(
+    420px,
+    calc(
+      (
+          100svh - 206px - env(safe-area-inset-top) -
+            env(safe-area-inset-bottom)
+        ) *
+        390 / 620
+    )
+  );
+  max-width: min(
+    420px,
+    calc(
+      (
+          100dvh - 206px - env(safe-area-inset-top) -
+            env(safe-area-inset-bottom)
+        ) *
+        390 / 620
+    )
+  );
+}
+@media (max-width: 350px) {
+  .editor-toolbar {
+    gap: 0;
+  }
+  .editor-toolbar .icon-button {
+    width: 40px;
+    flex-basis: 40px;
+  }
+}
