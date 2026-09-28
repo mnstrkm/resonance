@@ -688,7 +688,7 @@ input[type="range"] {
   font-size: 10px;
 }
 .menu-foot .seed-button {
-  padding-left: 0;
+  padding-left: 10px;
 }
 .help-card .intro {
   margin-top: 8px;
