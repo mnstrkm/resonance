@@ -249,33 +249,16 @@ canvas {
   background: radial-gradient(ellipse, #d2b79a22, transparent 70%);
   filter: blur(12px);
 }
-.welcome-art i {
-  width: 26px;
-  height: 26px;
+.welcome-art img {
   position: absolute;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #bcb7e5, #74628b 65%, #293646);
-  box-shadow: 0 5px 16px #0003;
-  left: 32px;
-  top: 49px;
-  border: 1px solid #bdb1e855;
+  left: 50%;
+  top: 50%;
+  width: 114px;
+  height: 114px;
+  transform: translate(-50%, -50%);
+  opacity: 0.72;
 }
-.welcome-art i:nth-child(2) {
-  width: 35px;
-  height: 35px;
-  left: 77px;
-  top: 25px;
-  background: radial-gradient(circle at 35% 30%, #eac59b, #a67c65 65%, #343240);
-  border-color: #d4b29655;
-}
-.welcome-art i:nth-child(3) {
-  width: 19px;
-  height: 19px;
-  left: 91px;
-  top: 79px;
-  background: radial-gradient(circle at 35% 30%, #a0d1c9, #649588 65%, #283840);
-  border-color: #9ecabd55;
-}
+
 h1 {
   font:
     64px Georgia,
