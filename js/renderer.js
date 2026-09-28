@@ -291,9 +291,11 @@
       ctx.stroke();
       ctx.globalAlpha = 1;
       if (o.copied) {
+        ctx.globalAlpha = spent ? 0.19 : 1;
         ctx.fillStyle = R.OrbTypes[o.copied].color;
         circle(ctx, 0, 0, 2.5);
         ctx.fill();
+        ctx.globalAlpha = 1;
       }
       if (charging) {
         const progress =
