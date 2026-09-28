@@ -239,7 +239,7 @@ canvas {
 .welcome-art {
   height: 114px;
   position: relative;
-  margin: 10px auto;
+  margin: 22px auto 10px;
   width: 150px;
 }
 .welcome-art:before {
@@ -448,7 +448,7 @@ input[type="range"] {
   .welcome-art {
     height: 70px;
     transform: scale(0.7);
-    margin-top: -10px;
+    margin-top: 6px;
     margin-bottom: 0;
   }
   h1 {
