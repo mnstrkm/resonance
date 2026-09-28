@@ -1,6 +1,6 @@
 # Resonanz
 
-Ein ruhiges Browser-Spiel mit sieben Orb-Fähigkeiten, gleitender Physik und kurzen Kettenreaktionen. Arbeitstitel, Version **0.1.0**.
+Ein ruhiges Browser-Spiel mit sieben Orb-Fähigkeiten, gleitender Physik und kurzen Kettenreaktionen. Arbeitstitel, Version **0.3.0**.
 
 **Kein Build, kein npm, keine APK zum Spielen nötig.** Alle benötigten Spiel-Dateien sind enthalten. Die Vorschauklänge werden im Browser erzeugt; eigene Sounddateien ersetzen sie automatisch.
 
@@ -29,14 +29,14 @@ Offizielle Anleitung: https://docs.github.com/en/pages/getting-started-with-gith
 
 - Einen hellen Orb berühren und innerhalb des gestrichelten Kreises verschieben.
 - Mindestens ein kleines Stück bewegen, dann loslassen: ein Impuls wird verbraucht.
-- Zurück auf den Ausgangspunkt, außerhalb des Kreises/der Arena oder über einem anderen Orb loslassen: kostenlos abbrechen.
+- Zurück auf den Ausgangspunkt, außerhalb des Kreises/der Arena oder über einem anderen Orb loslassen: ungültige Platzierung; kein Impuls wird verbraucht.
 - Beim Ziehen werden keine anderen Orbs bewegt. Die Welt ändert sich erst beim gültigen Loslassen.
 - Jeder angeregte Orb lädt 0,45 Sekunden und löst an seiner aktuellen Position aus.
-- Jeder Orb liefert genau einmal Energie. Der Core benötigt aufgerundet 70 Prozent der Orb-Anzahl.
+- Jeder Orb liefert genau einmal Energie. Der Core benötigt die Energie aller Orbs.
 - Nächster Zug erst nach Ende der Kette und Bewegung. Es gibt drei Impulse.
 - Gewonnene Runden enden mit einer Core-Welle. Niederlagen erlauben denselben Aufbau oder ein neues Feld.
-- Das Fragezeichen erklärt alle sieben Typen. Pause enthält Lautstärke und reduzierte Effekte.
-- Der Feld-Code unter der Arena lässt sich anklicken und auf einem anderen Gerät eingeben. Gleiche Version und Config vorausgesetzt.
+- Die Anleitung im Pausenmenü erklärt alle sieben Typen. Pause enthält Geschwindigkeit, Lautstärke und einen Zugang zu weiteren Einstellungen.
+- Der Feld-Code im Pausenmenü lässt sich anklicken und auf einem anderen Gerät eingeben. Gleiche Version und Config vorausgesetzt.
 
 ## 4. Die sieben Orbs
 
@@ -62,12 +62,12 @@ Normale Kollisionen aktivieren keine Orbs. Projektile werden von anderen Orbs ni
 | ------------------------------ | ----------- | ---------------------------------------------------------------------- |
 | `gameplay.minOrbs` / `maxOrbs` | 10 / 15     | Anzahl pro neuem Feld                                                  |
 | `gameplay.impulses`            | 3           | Manuelle Züge                                                          |
-| `gameplay.requiredRatio`       | 0.70        | Anteil der benötigten Orbs; zum Erschweren z. B. 0.77                  |
+| `gameplay.requiredRatio`       | 1           | Anteil der benötigten Orbs; aktuell alle Orbs                  |
 | `gameplay.chargeTime`          | 0.45        | Zeit zwischen Anregung und Fähigkeit                                   |
 | `gameplay.moveRadius`          | 64          | Erlaubte Verschiebung                                                  |
 | `gameplay.minDrag`             | 9           | Freie Abbruchzone um die Ursprungsposition                             |
 | `gameplay.orbRadius`           | 13          | Physischer Radius                                                      |
-| `generator.minDistance`        | 42          | Mindestabstand bei Erzeugung                                           |
+| `generator.minDistance`        | 50          | Mindestabstand bei Erzeugung                                           |
 | `generator.includeEveryType`   | true        | Jeden Typ mindestens einmal erzeugen, wenn genug Plätze vorhanden sind |
 | `physics.damping`              | 1.9         | Höher = kürzeres Gleiten                                               |
 | `physics.restitution`          | 0.64        | Höher = elastischeres Abprallen                                        |
@@ -109,15 +109,7 @@ Auf manchen Systemen heißt der Befehl `python3` statt `python`. Danach `http://
 
 ## 9. Prüfen und bekannte Grenzen
 
-Automatische Mechaniktests (optional, Node.js erforderlich):
-
-```sh
-node tests/simulation.cjs
-```
-
-Durchgeführt: 1.000 Generator-Seeds; Fähigkeiten/Sonderfälle; 500 simulierte Runden; separate DOM-Integration für Eingabe, Pause, Sieg/Niederlage und Retry. Die Canvas-Darstellung wurde direkt gerendert und visuell geprüft.
-
-**Noch kein echter End-to-End-Browsertest oder Gerätetest:** Der lokale Browser war in der Erstellungsumgebung nicht verfügbar, die Remote-Vorschau konnte den lokalen Server nicht erreichen. Die DOM-Prüfung ersetzt deshalb keinen Test in Safari/Chrome auf deinem Handy. Vor einer Veröffentlichung als fertiges Produkt bitte `TESTING.md` durchgehen.
+Prüfstand und reproduzierbare Testbefehle für v0.3.0: **`TESTING.md`**. Integration und Grafikvergleich bestanden. Ein echter Android-/iPad-Browsertest steht noch aus; die lokale Vorschau war in der Arbeitsumgebung gesperrt.
 
 Weitere bewusste Grenzen:
 
@@ -129,3 +121,18 @@ Weitere bewusste Grenzen:
 - Kleinere Displays haben eine kompaktere Arena; Touch-Treffflächen sind größer als sichtbare Orbs. Hochformat ist empfohlen.
 
 Die Bilder aus der Planungsphase sind nicht enthalten und werden nicht als Spielassets verwendet.
+
+## 10. Eigenes Feld (v0.3.0)
+
+Im Hauptmenü „Eigenes Feld“ wählen. Das Plus öffnet eine kleine Orb-Auswahl. Einen Typ antippen und dann auf einen freien Platz tippen; alternativ direkt aus der Auswahl ins Feld ziehen. Bestehende Orbs lassen sich im Editor ohne Bewegungsradius verschieben. Überlappungen und Positionen außerhalb der Arena werden abgewiesen.
+
+- Papierkorb: Zurücksetzen. Gebogener Pfeil: Rückgängig (bis zu 40 Schritte).
+- Ausgewählter Orb: kleines X entfernt ihn.
+- Spielen: drei Impulse, alle platzierten Orbs als Core-Ziel; maximal 100 Orbs pro Entwurf.
+- „Zum Editor“ bringt den ursprünglichen Entwurf zurück. „Neu versuchen“ startet diesen Aufbau erneut.
+- Der letzte Entwurf bleibt automatisch im Browser auf diesem Gerät. Kein Download und keine Cloud-Synchronisierung. Löschen der Websitedaten oder privates Surfen kann ihn entfernen. Eine laufende Runde wird nicht gespeichert.
+
+Für eigene spätere Leveldateien die Seite mit `?creator=1` öffnen:
+https://mnstrkm.github.io/resonance/?creator=1
+
+Nur diese Werkzeugansicht zeigt im Editor einen Download-Knopf. Erst ein bewusster Klick speichert eine JSON-Datei. Der Parameter ist ein UI-Schalter, kein Zugangsschutz. Details zum späteren Level-Ordner stehen in `ARCHITECTURE.md`; ein Import oder eine Kampagne ist noch nicht enthalten.
