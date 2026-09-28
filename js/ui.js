@@ -1,5 +1,5 @@
 (function (R) {
-  R.version = "0.1.2";
+  R.version = "0.1.3";
   const $ = (id) => document.getElementById(id);
   R.UI = class {
     constructor(game) {
@@ -32,7 +32,6 @@
         }
         if (e.key === "Escape" && this.modal.hidden) this.pause();
       });
-
     }
     async begin() {
       await this.game.audio.start().catch(() => {});
@@ -71,7 +70,6 @@
         }),
       );
       $("impulses").setAttribute("aria-label", s.impulses + " Impulse übrig");
-
     }
     open(html) {
       this.lastFocus = document.activeElement;
@@ -92,8 +90,19 @@
     showPause() {
       const a = this.game.audio;
       this.open(
-        `<p class="eyebrow">EIN MOMENT RUHE</p><h2>Pause</h2><div class="settings"><button id="sound" aria-pressed="${!a.muted}">${a.muted ? "Ton aus" : "Ton an"}</button><label>Lautstärke <input id="volume" type="range" min="0" max="1" step="0.05" value="${R.Config.audio.master}"></label><label class="check"><input id="fallback" type="checkbox" ${a.fallback ? "checked" : ""}> Synthetische Vorschauklänge</label><label class="check"><input id="motion" type="checkbox" ${R.Config.effects.reducedMotion ? "checked" : ""}> Weniger Partikel & Lichtbewegung</label></div><button class="primary" id="resume">Weiterspielen</button><div class="button-row"><button id="retry">Neu versuchen</button><button id="new">Neues Feld</button></div><button class="text-button" id="guide">Anleitung & Orb-Lexikon</button><button class="text-button" id="seed-menu">Feld ${this.game.state.seed.toString(36).toUpperCase()}</button><p class="version">v${R.version}</p>`,
+        `<p class="eyebrow">EIN MOMENT RUHE</p><h2>Pause</h2><div class="settings"><div class="speed-setting"><span id="speed-label">Geschwindigkeit</span><div class="speed-options" role="group" aria-labelledby="speed-label">${[0.5, 1, 2].map((speed) => `<button type="button" data-speed="${speed}" aria-pressed="${this.game.speed === speed}">${String(speed).replace(".", ",")}×</button>`).join("")}</div></div><button id="sound" aria-pressed="${!a.muted}">${a.muted ? "Ton aus" : "Ton an"}</button><label>Lautstärke <input id="volume" type="range" min="0" max="1" step="0.05" value="${R.Config.audio.master}"></label><label class="check"><input id="fallback" type="checkbox" ${a.fallback ? "checked" : ""}> Synthetische Vorschauklänge</label><label class="check"><input id="motion" type="checkbox" ${R.Config.effects.reducedMotion ? "checked" : ""}> Weniger Partikel & Lichtbewegung</label></div><button class="primary" id="resume">Weiterspielen</button><div class="button-row"><button id="retry">Neu versuchen</button><button id="new">Neues Feld</button></div><button class="text-button" id="guide">Anleitung & Orb-Lexikon</button><button class="text-button" id="seed-menu">Feld ${this.game.state.seed.toString(36).toUpperCase()}</button><p class="version">v${R.version}</p>`,
       );
+      this.modal.querySelectorAll("[data-speed]").forEach((button) => {
+        button.onclick = () => {
+          this.game.setSpeed(Number(button.dataset.speed));
+          this.modal.querySelectorAll("[data-speed]").forEach((option) => {
+            option.setAttribute(
+              "aria-pressed",
+              String(Number(option.dataset.speed) === this.game.speed),
+            );
+          });
+        };
+      });
       $("sound").onclick = () => {
         a.mute(!a.muted);
         this.soundLabel();
@@ -132,10 +141,20 @@
       this.modal.querySelectorAll("canvas[data-orb]").forEach((canvas, id) => {
         const ctx = canvas.getContext("2d");
         ctx.scale(2, 2);
-        R.Renderer.prototype.orb.call({ ctx }, {
-          id, type: canvas.dataset.orb, x: 24, y: 23, r: 17,
-          state: "idle", boost: 1, copied: null,
-        }, 0);
+        R.Renderer.prototype.orb.call(
+          { ctx },
+          {
+            id,
+            type: canvas.dataset.orb,
+            x: 24,
+            y: 23,
+            r: 17,
+            state: "idle",
+            boost: 1,
+            copied: null,
+          },
+          0,
+        );
       });
       $("back").onclick = () => {
         if (back) this.showPause();
@@ -177,7 +196,7 @@
         this.close();
         this.game.newRound(seed);
       };
-      $("close-seed").onclick = () => back ? this.showPause() : this.close();
+      $("close-seed").onclick = () => (back ? this.showPause() : this.close());
     }
   };
 })(Resonance);

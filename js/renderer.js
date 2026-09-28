@@ -8,24 +8,30 @@
     constructor(canvas) {
       this.canvas = canvas;
       this.ctx = canvas.getContext("2d", { alpha: false });
-      this.scale = 1;
+      this.scaleX = 1;
+      this.scaleY = 1;
       this.resize();
       new ResizeObserver(() => this.resize()).observe(canvas);
     }
     resize() {
       const box = this.canvas.getBoundingClientRect(),
         dpr = Math.min(window.devicePixelRatio || 1, 2);
-      this.canvas.width = Math.round(box.width * dpr);
-      this.canvas.height = Math.round(box.height * dpr);
-      this.scale = this.canvas.width / R.Config.arena.width;
+      this.canvas.width = Math.max(1, Math.round(box.width * dpr));
+      this.canvas.height = Math.max(1, Math.round(box.height * dpr));
+      this.scaleX = this.canvas.width / R.Config.arena.width;
+      this.scaleY = this.canvas.height / R.Config.arena.height;
     }
     draw(s, particles, drag) {
       const ctx = this.ctx,
         a = R.Config.arena;
-      ctx.setTransform(this.scale, 0, 0, this.scale, 0, 0);
+      // Clear EVERY backing pixel before drawing in logical arena units.
+      // Rounded CSS dimensions can differ by a pixel in their aspect ratio.
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.globalAlpha = 1;
+      ctx.globalCompositeOperation = "source-over";
       ctx.fillStyle = "#111b25";
-      ctx.fillRect(0, 0, a.width, a.height);
+      ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+      ctx.setTransform(this.scaleX, 0, 0, this.scaleY, 0, 0);
       const bg = ctx.createRadialGradient(185, 290, 25, 190, 300, 370);
       bg.addColorStop(0, "#1d2d3a");
       bg.addColorStop(1, "#101923");
@@ -222,7 +228,7 @@
           ? o.id
           : time * 0.35 + o.id;
         ctx.save();
-        ctx.globalAlpha = 0.12;
+        ctx.globalAlpha = o.type === "gold" ? 0.045 : 0.12;
         ctx.strokeStyle = "#fff8e7";
         ctx.lineWidth = 0.6;
         ctx.beginPath();
@@ -232,6 +238,9 @@
       }
       ctx.strokeStyle = spent ? color + "33" : color + "bb";
       ctx.lineWidth = 0.8;
+      // Canvas save/restore does not restore the current path. Rebuild the
+      // outline so the decorative inner ellipse is not stroked brightly again.
+      circle(ctx, 0, 0, r);
       ctx.stroke();
       ctx.strokeStyle = spent ? "#ffffff12" : "#ffffff55";
       ctx.lineWidth = 1;
@@ -272,9 +281,9 @@
         ctx.lineTo(-3, 4);
       }
       if (symbol === "spark") {
-        ctx.moveTo(-4, 2);
-        ctx.quadraticCurveTo(5, 6, 4, -1);
-        ctx.quadraticCurveTo(3, -6, -2, -3);
+        // One open curl, without the overlapping second loop.
+        ctx.arc(0, 0, 4.4, -0.8, 4.4);
+        ctx.quadraticCurveTo(0, -3.4, 2, -0.8);
       }
       if (symbol === "aura") {
         ctx.arc(0, 0, 3, 0, TAU);

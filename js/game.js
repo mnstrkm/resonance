@@ -6,6 +6,15 @@
       this.mode = mode;
       this.state = R.createState(R.createSeed(), this.mode);
       this.paused = true;
+      // Playback preference only: never alters balance values or the fixed step.
+      this.speed = 1;
+      try {
+        const saved = Number(localStorage.getItem("resonance.speed"));
+        if ([0.5, 1, 2].includes(saved)) this.speed = saved;
+      } catch (_) {
+        /* Storage may be unavailable in private browsing. */
+      }
+
       this.renderer = new R.Renderer(document.getElementById("arena"));
       this.ui = new R.UI(this);
       this.input = new R.Input(document.getElementById("arena"), this);
@@ -36,6 +45,15 @@
       this.last = 0;
       if (value) this.audio.stop();
       else this.audio.start().catch(() => {});
+    }
+    setSpeed(value) {
+      if (![0.5, 1, 2].includes(value)) return;
+      this.speed = value;
+      try {
+        localStorage.setItem("resonance.speed", String(value));
+      } catch (_) {
+        /* The setting still works for this session. */
+      }
     }
     event(name, d) {
       this.particles.emit(name, d);
@@ -127,7 +145,9 @@
       );
       this.last = timestamp;
       if (!this.paused) {
-        this.accumulator += dt;
+        // All simulation systems share this clock. Keep each physics step
+        // unchanged so different playback speeds produce the same trajectory.
+        this.accumulator += dt * this.speed;
         while (this.accumulator >= R.Config.physics.step) {
           this.step(R.Config.physics.step);
           this.accumulator -= R.Config.physics.step;
