@@ -129,7 +129,7 @@
         a = R.Config.arena,
         x = a.width / 2,
         y = a.height / 2,
-        fill = Math.min(1, s.energy / s.required),
+        fill = s.required > 0 ? Math.min(1, s.energy / s.required) : 0,
         pulse = R.Config.effects.reducedMotion ? 0 : Math.sin(s.time * 0.6) * 3;
       // Light only: no rim, shell, drop shadow or collision body.
       const colors = s.orbs
@@ -239,15 +239,12 @@
       ctx.strokeStyle = spent ? color + "33" : color + "bb";
       ctx.lineWidth = 0.8;
       ctx.stroke();
-      ctx.strokeStyle = spent ? "#ffffff12" : "#ffffff55";
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.arc(-1, -1, r - 2.5, 3.6, 4.9);
-      ctx.stroke();
-      if (spent) {
-        ctx.fillStyle = color + "20";
-        circle(ctx, -2, -2, r * 0.6);
-        ctx.fill();
+      if (!spent) {
+        ctx.strokeStyle = "#ffffff55";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(-1, -1, r - 2.5, 3.6, 4.9);
+        ctx.stroke();
       }
       ctx.globalAlpha = spent ? 0.19 : 0.75;
       ctx.strokeStyle = charging
@@ -278,9 +275,8 @@
         ctx.lineTo(-3, 4);
       }
       if (symbol === "spark") {
-        ctx.moveTo(-4, 2);
-        ctx.quadraticCurveTo(5, 6, 4, -1);
-        ctx.quadraticCurveTo(3, -6, -2, -3);
+        ctx.arc(0, 0, 4.4, -0.8, 4.4);
+        ctx.quadraticCurveTo(0, -3.4, 2, -0.8);
       }
       if (symbol === "aura") {
         ctx.arc(0, 0, 3, 0, TAU);

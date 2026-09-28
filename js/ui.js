@@ -32,6 +32,31 @@
         .querySelectorAll("[data-version]")
         .forEach((el) => (el.textContent = "v" + R.version));
       this.buildEditor();
+      this.modal.addEventListener("keydown", (e) => {
+        if (e.key !== "Tab") return;
+        const nodes = [...this.modal.querySelectorAll("button,input,a")].filter(
+          (n) => !n.disabled,
+        );
+        const first = nodes[0],
+          last = nodes[nodes.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last?.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first?.focus();
+        }
+      });
+      window.addEventListener("keydown", (e) => {
+        if (e.key !== "Escape") return;
+        e.preventDefault();
+        if (game.input.drag || game.editor.drag) {
+          game.input.cancel();
+          return;
+        }
+        if (this.nav.route.panel) this.close();
+        else if (this.nav.route.screen !== "home") this.pause();
+      });
       this.renderRoute(this.nav.route);
     }
     begin() {
@@ -85,7 +110,7 @@
         // A result is a state of this round, not a fresh history entry.
         this.nav.go({ screen: "game", panel: "result" }, true);
         return;
-      }
+      } 
       this.update();
       if (editing) this.updateEditor();
     }

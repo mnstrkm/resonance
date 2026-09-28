@@ -31,10 +31,10 @@
     />
     <link rel="manifest" href="manifest.webmanifest?v=0.1.3" />
     <meta name="apple-mobile-web-app-title" content="Resonanz" />
-    <link rel="stylesheet" href="css/style.css?v=0.1.3" />
+    <link rel="stylesheet" href="css/style.css?v=0.3.0a" />
   </head>
   <body>
-    <main class="app">
+    <main class="app" id="app">
       <header class="topbar">
         <a class="wordmark" href="./" aria-label="Resonanz Startseite"
           >resonanz<span>ENERGIE IN BEWEGUNG</span></a
@@ -58,6 +58,21 @@
             aria-label="Ziehe einen farbigen Orb innerhalb seines Bewegungsradius und lass ihn los. Maus oder Touch erforderlich."
           ></canvas>
         </div>
+        <div id="editor-controls" hidden>
+          <div
+            id="orb-palette"
+            class="orb-palette"
+            hidden
+            aria-label="Orb-Auswahl"
+          ></div>
+          <div
+            id="editor-toolbar"
+            class="editor-toolbar"
+            role="group"
+            aria-label="Feld bearbeiten"
+          ></div>
+          <p id="editor-status" class="editor-status" aria-live="polite"></p>
+        </div>
         <footer class="game-footer">
           <div id="impulses" class="impulses"></div>
 
@@ -80,6 +95,7 @@
         <button id="start" class="primary">
           Spiel starten <span aria-hidden="true">↗</span>
         </button>
+        <button id="open-editor" class="text-button">Eigenes Feld</button>
         <p class="welcome-hint">Ziehen. Loslassen. Entfalten lassen.</p>
         <p class="version" data-version></p>
       </div>
@@ -98,17 +114,20 @@
       >Dieses Spiel benötigt JavaScript. Bitte aktiviere es in deinem
       Browser.</noscript
     >
-    <script src="js/config.js?v=0.2.0"></script>
-    <script src="js/orb-types.js?v=0.2.0"></script>
-    <script src="js/generator.js?v=0.2.0"></script>
-    <script src="js/state.js?v=0.2.0"></script>
-    <script src="js/physics.js?v=0.2.0"></script>
-    <script src="js/chain.js?v=0.2.0"></script>
-    <script src="js/audio.js?v=0.2.0"></script>
-    <script src="js/particles.js?v=0.2.0"></script>
-    <script src="js/renderer.js?v=0.2.0"></script>
-    <script src="js/input.js?v=0.2.0"></script>
-    <script src="js/ui.js?v=0.2.0"></script>
-    <script src="js/game.js?v=0.2.0"></script>
+    <script src="js/config.js?v=0.3.0"></script>
+    <script src="js/orb-types.js?v=0.3.0"></script>
+    <script src="js/generator.js?v=0.3.0"></script>
+    <script src="js/level-data.js?v=0.3.0"></script>
+    <script src="js/state.js?v=0.3.0"></script>
+    <script src="js/physics.js?v=0.3.0"></script>
+    <script src="js/chain.js?v=0.3.0"></script>
+    <script src="js/audio.js?v=0.3.0"></script>
+    <script src="js/particles.js?v=0.3.0"></script>
+    <script src="js/renderer.js?v=0.3.0"></script>
+    <script src="js/input.js?v=0.3.0"></script>
+    <script src="js/navigation.js?v=0.3.0"></script>
+    <script src="js/editor.js?v=0.3.0"></script>
+    <script src="js/ui.js?v=0.3.0c"></script>
+    <script src="js/game.js?v=0.3.0"></script>
   </body>
 </html>

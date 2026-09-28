@@ -3,7 +3,7 @@
     red: {
       name: "Druck",
       color: "#ff786d",
-      description: "Regt nahe Orbs an und stößt sie weg.",
+      description: "Stößt nahe Orbs weg und regt sie an.",
       symbol: "expand",
       ability: "red",
     },
