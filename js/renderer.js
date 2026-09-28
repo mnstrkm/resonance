@@ -228,7 +228,7 @@
           ? o.id
           : time * 0.35 + o.id;
         ctx.save();
-        ctx.globalAlpha = o.type === "gold" ? 0.045 : 0.12;
+        ctx.globalAlpha = 0.12;
         ctx.strokeStyle = "#fff8e7";
         ctx.lineWidth = 0.6;
         ctx.beginPath();
@@ -238,9 +238,6 @@
       }
       ctx.strokeStyle = spent ? color + "33" : color + "bb";
       ctx.lineWidth = 0.8;
-      // Canvas save/restore does not restore the current path. Rebuild the
-      // outline so the decorative inner ellipse is not stroked brightly again.
-      circle(ctx, 0, 0, r);
       ctx.stroke();
       ctx.strokeStyle = spent ? "#ffffff12" : "#ffffff55";
       ctx.lineWidth = 1;
@@ -281,9 +278,9 @@
         ctx.lineTo(-3, 4);
       }
       if (symbol === "spark") {
-        // One open curl, without the overlapping second loop.
-        ctx.arc(0, 0, 4.4, -0.8, 4.4);
-        ctx.quadraticCurveTo(0, -3.4, 2, -0.8);
+        ctx.moveTo(-4, 2);
+        ctx.quadraticCurveTo(5, 6, 4, -1);
+        ctx.quadraticCurveTo(3, -6, -2, -3);
       }
       if (symbol === "aura") {
         ctx.arc(0, 0, 3, 0, TAU);

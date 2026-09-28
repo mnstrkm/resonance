@@ -40,11 +40,6 @@
       $("pause").focus();
       this.defaultHint();
     }
-    soundLabel() {
-      if (!$("sound")) return;
-      $("sound").textContent = this.game.audio.muted ? "Ton aus" : "Ton an";
-      $("sound").setAttribute("aria-pressed", String(!this.game.audio.muted));
-    }
     hint(text) {
       $("hint").textContent = text;
     }
@@ -90,7 +85,7 @@
     showPause() {
       const a = this.game.audio;
       this.open(
-        `<p class="eyebrow">EIN MOMENT RUHE</p><h2>Pause</h2><div class="settings"><div class="speed-setting"><span id="speed-label">Geschwindigkeit</span><div class="speed-options" role="group" aria-labelledby="speed-label">${[0.5, 1, 2].map((speed) => `<button type="button" data-speed="${speed}" aria-pressed="${this.game.speed === speed}">${String(speed).replace(".", ",")}×</button>`).join("")}</div></div><button id="sound" aria-pressed="${!a.muted}">${a.muted ? "Ton aus" : "Ton an"}</button><label>Lautstärke <input id="volume" type="range" min="0" max="1" step="0.05" value="${R.Config.audio.master}"></label><label class="check"><input id="fallback" type="checkbox" ${a.fallback ? "checked" : ""}> Synthetische Vorschauklänge</label><label class="check"><input id="motion" type="checkbox" ${R.Config.effects.reducedMotion ? "checked" : ""}> Weniger Partikel & Lichtbewegung</label></div><button class="primary" id="resume">Weiterspielen</button><div class="button-row"><button id="retry">Neu versuchen</button><button id="new">Neues Feld</button></div><button class="text-button" id="guide">Anleitung & Orb-Lexikon</button><button class="text-button" id="seed-menu">Feld ${this.game.state.seed.toString(36).toUpperCase()}</button><p class="version">v${R.version}</p>`,
+        `<p class="eyebrow">EIN MOMENT RUHE</p><h2>Pause</h2><div class="settings"><div class="speed-setting"><span id="speed-label">Geschwindigkeit</span><div class="speed-options" role="group" aria-labelledby="speed-label">${[0.5, 1, 2].map((speed) => `<button type="button" data-speed="${speed}" aria-pressed="${this.game.speed === speed}">${String(speed).replace(".", ",")}×</button>`).join("")}</div></div><label>Lautstärke <input id="volume" type="range" min="0" max="1" step="0.05" value="${R.Config.audio.master}"></label><label class="check"><input id="fallback" type="checkbox" ${a.fallback ? "checked" : ""}> Synthetische Vorschauklänge</label><label class="check"><input id="motion" type="checkbox" ${R.Config.effects.reducedMotion ? "checked" : ""}> Weniger Partikel & Lichtbewegung</label></div><button class="primary" id="resume">Weiterspielen</button><div class="button-row"><button id="retry">Neu versuchen</button><button id="new">Neues Feld</button></div><button class="text-button" id="guide">Anleitung & Orb-Lexikon</button><button class="text-button" id="seed-menu">Feld ${this.game.state.seed.toString(36).toUpperCase()}</button><p class="version">v${R.version}</p>`,
       );
       this.modal.querySelectorAll("[data-speed]").forEach((button) => {
         button.onclick = () => {
@@ -103,10 +98,6 @@
           });
         };
       });
-      $("sound").onclick = () => {
-        a.mute(!a.muted);
-        this.soundLabel();
-      };
       $("seed-menu").onclick = () => this.seedDialog(true);
       $("volume").oninput = (e) => a.volume(+e.target.value);
       $("fallback").onchange = (e) => (a.fallback = e.target.checked);
