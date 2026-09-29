@@ -2,7 +2,7 @@
 
 **Ein Impuls kann eine ganze Kettenreaktion auslösen.** Resonanz ist ein Browser-Spiel über Orbs mit unterschiedlichen Fähigkeiten, gleitende Bewegung und das Zusammenspiel ihrer Effekte. Verschiebe einen Orb, beobachte die Reaktion und versuche, mit höchstens drei Impulsen die Energie aller Orbs zum Core zu bringen.
 
-**[Jetzt Resonanz spielen](https://mnstrkm.github.io/resonance/)** · [Quellcode](https://github.com/mnstrkm/resonance) · Version **0.3.0**
+**[Jetzt Resonanz spielen](https://mnstrkm.github.io/resonance/)** · [Quellcode](https://github.com/mnstrkm/resonance) · Version **0.3.1**
 
 Das Spiel läuft im Browser auf Geräten mit Touch oder Maus. Eine Installation ist nicht erforderlich.
 
@@ -23,7 +23,7 @@ Ungültige Platzierungen verbrauchen keinen Impuls. Die Anleitung mit den Orb-F�
 | **Pulsar** (Violett) | Zieht zuerst an und löst anschließend einen Druckstoß aus. |
 | **Pfeil** (Grün) | Trifft das nächste ruhende Ziel in Reichweite. |
 | **Funke** (Gold) | Sucht ein zufälliges ruhendes Ziel in der ganzen Arena. |
-| **Aura** (Orange) | Regt nahe Orbs an und verstärkt deren Wirkung. |
+| **Aura** (Orange) | Regt nahe Orbs an und verstärkt Kraft und Reichweite bestimmter Fähigkeiten. |
 | **Spiegel** (Perlmutt) | Kopiert die Fähigkeit des auslösenden Orbs. |
 
 ## Eigenes Feld
@@ -51,9 +51,9 @@ Die zentralen Zahlen stehen in [js/config.js](js/config.js). Distanzen sind **lo
 | Physik: Abbremsen / Abprallen | `physics.damping` / `restitution` | 1,9 / 0,64 |
 | Radius von Druck, Sog und Pulsar | `abilities.red/blue/violet.radius` | jeweils 100 |
 | Reichweite des Pfeils | `abilities.green.radius` | 175 |
-| Radius / Verstärkung der Aura | `abilities.orange.radius` / `multiplier` | 70 / 1,55 |
+| Aura: eigener Radius / Kraft / Reichweite | `abilities.orange.radius` / `multiplier` / `rangeMultiplier` | 70 / 1,80 / 1,20 |
 
-Die Zielzahl für **Eigenes Feld** entspricht unabhängig von `requiredRatio` immer der Anzahl der platzierten Orbs; der Modus steht in [js/state.js](js/state.js). Geschwindigkeitseinstellungen im Pausenmenü ändern das Spieltempo, nicht die Reichweiten. Für eine Balanceänderung möglichst nur einen Wert auf einmal ändern und anschließend dasselbe Feld erneut testen.
+Die Zielzahl für **Eigenes Feld** entspricht unabhängig von `requiredRatio` immer der Anzahl der platzierten Orbs; der Modus steht in [js/state.js](js/state.js). Geschwindigkeitseinstellungen im Pausenmenü ändern das Spieltempo, nicht die Reichweiten. Orange verstärkt direkt aktivierte rote, blaue, violette und grüne Orbs; ein direkt aktiviertes Orange hat eine größere Aura. Gold und die Fähigkeit des Spiegels bleiben bei ihrer gewohnten Wirkung. Der Bonus wird nicht durch andere Orb-Typen weitergegeben oder nachträglich auf bereits ladende Orbs angewandt. Für eine Balanceänderung möglichst nur einen Wert auf einmal ändern und anschließend dasselbe Feld erneut testen.
 
 ### Darstellung, Orbs und Sounds
 
