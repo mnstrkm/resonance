@@ -10,6 +10,7 @@ const scripts = [
   "orb-types",
   "generator",
   "level-data",
+  "level-loader",
   "state",
   "physics",
   "chain",
@@ -110,10 +111,12 @@ async function setup(search = "") {
 (async () => {
   const t = await setup(),
     { w, g, R, click, back, pointer, settle } = t;
-  assert.equal(R.version, "0.3.1");
+  assert.equal(R.version, "0.4.0");
   assert(g.paused);
   assert.equal(g.ui.nav.depth, 0);
   await click("start");
+  assert.equal(g.ui.nav.route.screen, "modes");
+  await click("mode-random");
   assert.equal(g.ui.nav.route.screen, "game");
   assert(!g.paused);
   const seed = g.state.seed;
@@ -146,7 +149,8 @@ async function setup(search = "") {
   await click("go-home");
   assert.equal(g.ui.nav.depth, 0);
   assert(g.paused);
-  await click("open-editor");
+  await click("start");
+  await click("mode-editor");
   assert.equal(g.ui.nav.route.screen, "editor");
   assert.equal(g.ui.nav.depth, 1);
   assert.equal(g.editor.layout.count, 0);

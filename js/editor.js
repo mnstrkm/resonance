@@ -35,7 +35,7 @@
       }
     }
     remember() {
-      this.history.push(copy(this.layout));
+      this.history.push({ layout: copy(this.layout), guides: copy(this.guides || []) });
       if (this.history.length > 40) this.history.shift();
     }
     changed() {
@@ -84,14 +84,20 @@
     }
     undo() {
       if (!this.history.length) return;
-      this.layout = this.history.pop();
+      const state = this.history.pop();
+      if (state && state.guides !== undefined) {
+        this.layout = state.layout;
+        this.guides = state.guides;
+      } else {
+        this.layout = state;
+      }
       this.selected = null;
       this.changed();
     }
     snapshot() {
       return copy(this.layout);
     }
-    download() {
+    download(filename) {
       const payload = R.LevelData.export(this.layout);
       const url = URL.createObjectURL(
         new Blob([JSON.stringify(payload, null, 2)], {
@@ -100,11 +106,23 @@
       );
       const a = document.createElement("a");
       a.href = url;
-      a.download = "resonanz-level-" + this.layout.seed.toString(36) + ".json";
+      a.download = (filename || "resonanz-level-" + this.layout.seed.toString(36)) + ".json";
       document.body.append(a);
       a.click();
       a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+    addGuide(type) {
+      this.remember();
+      if (!this.guides) this.guides = [];
+      if (type === "line") this.guides.push({ id: 'g' + Date.now(), type: 'line', x: 195, y: 310, angle: 0, length: 150 });
+      if (type === "circle") this.guides.push({ id: 'g' + Date.now(), type: 'circle', x: 195, y: 310, r: 100 });
+      this.refresh();
+    }
+    resetGuides() {
+      this.remember();
+      this.guides = [];
+      this.refresh();
     }
     point(e) {
       return this.game.input.point(e);
@@ -112,6 +130,7 @@
     down(e) {
       if (e.button !== 0 || this.drag) return;
       const p = this.point(e);
+      const canvas = this.game.input.canvas;
       const o = this.layout.orbs
         .slice()
         .sort(
@@ -122,9 +141,46 @@
           (o) =>
             Math.hypot(o.x - p.x, o.y - p.y) <= R.Config.gameplay.hitRadius,
         );
+      if (!o && this.guides) {
+        for (let i = this.guides.length - 1; i >= 0; i--) {
+          const g = this.guides[i];
+          if (g.type === "circle") {
+            if (Math.hypot(g.x - p.x, g.y - p.y) < 20) {
+              this.remember();
+              this.drag = { pointer: e.pointerId, element: canvas, kind: 'guide_move', g, offsetX: g.x - p.x, offsetY: g.y - p.y, valid: true }; break;
+            }
+            if (Math.hypot((g.x + g.r) - p.x, g.y - p.y) < 20) {
+              this.remember();
+              this.drag = { pointer: e.pointerId, element: canvas, kind: 'guide_resize', g, valid: true }; break;
+            }
+          } else if (g.type === "line") {
+            if (Math.hypot(g.x - p.x, g.y - p.y) < 20) {
+              this.remember();
+              this.drag = { pointer: e.pointerId, element: canvas, kind: 'guide_move', g, offsetX: g.x - p.x, offsetY: g.y - p.y, valid: true }; break;
+            }
+            const len = g.length || 150;
+            const hxRight = g.x + Math.cos(g.angle) * len;
+            const hyRight = g.y + Math.sin(g.angle) * len;
+            if (Math.hypot(hxRight - p.x, hyRight - p.y) < 20) {
+              this.remember();
+              this.drag = { pointer: e.pointerId, element: canvas, kind: 'guide_rotate', g, valid: true }; break;
+            }
+            const hxLeft = g.x - Math.cos(g.angle) * len;
+            const hyLeft = g.y - Math.sin(g.angle) * len;
+            if (Math.hypot(hxLeft - p.x, hyLeft - p.y) < 20) {
+              this.remember();
+              this.drag = { pointer: e.pointerId, element: canvas, kind: 'guide_resize_line', g, valid: true }; break;
+            }
+          }
+        }
+      }
       e.preventDefault();
-      const canvas = this.game.input.canvas;
       canvas.setPointerCapture(e.pointerId);
+      if (this.drag) {
+        this.updateDrag(e);
+        this.game.ui.updateEditor();
+        return;
+      }
       this.selected = o?.id ?? null;
       this.drag = {
         pointer: e.pointerId,
@@ -169,6 +225,50 @@
         d = this.drag;
       d.x = p.x + d.offsetX;
       d.y = p.y + d.offsetY;
+      
+      if (d.kind === 'guide_move') {
+        d.g.x = d.x; d.g.y = d.y;
+        this.game.ui.updateEditor(); return;
+      }
+      if (d.kind === 'guide_resize') {
+        d.g.r = Math.max(10, Math.hypot(p.x - d.g.x, p.y - d.g.y));
+        this.game.ui.updateEditor(); return;
+      }
+      if (d.kind === 'guide_rotate') {
+        d.g.angle = Math.atan2(p.y - d.g.y, p.x - d.g.x);
+        this.game.ui.updateEditor(); return;
+      }
+      if (d.kind === 'guide_resize_line') {
+        d.g.length = Math.max(20, Math.hypot(p.x - d.g.x, p.y - d.g.y));
+        this.game.ui.updateEditor(); return;
+      }
+
+      if (this.guides && (d.kind === 'move' || d.kind === 'add')) {
+        for (const g of this.guides) {
+          if (g.type === "circle") {
+            const dist = Math.hypot(d.x - g.x, d.y - g.y);
+            if (Math.abs(dist - g.r) < 20) {
+               d.x = g.x + (d.x - g.x) / dist * g.r;
+               d.y = g.y + (d.y - g.y) / dist * g.r;
+               break;
+            }
+          } else if (g.type === "line") {
+            const len = g.length || 150;
+            const dx = d.x - g.x, dy = d.y - g.y;
+            const t = dx * Math.cos(g.angle) + dy * Math.sin(g.angle);
+            if (Math.abs(t) <= len + 5) {
+              const distLine = Math.abs(-Math.sin(g.angle) * dx + Math.cos(g.angle) * dy);
+              if (distLine < 20) {
+                const clampedT = Math.max(-len, Math.min(len, t));
+                d.x = g.x + clampedT * Math.cos(g.angle);
+                d.y = g.y + clampedT * Math.sin(g.angle);
+                break;
+              }
+            }
+          }
+        }
+      }
+
       const paletteBounds = d.palette
         ? d.element.parentElement.getBoundingClientRect()
         : null;
@@ -203,18 +303,64 @@
       }
       if (d.valid) {
         if (d.kind === "move") this.move(d.id, d.x, d.y);
-        else this.add(d.type, d.x, d.y);
+        else if (d.kind === "add") this.add(d.type, d.x, d.y);
       }
       this.game.ui.updateEditor();
     }
     cancel() {
       const d = this.drag;
       this.drag = null;
-      if (d?.element.hasPointerCapture?.(d.pointer))
+      if (d?.element?.hasPointerCapture?.(d.pointer))
         d.element.releasePointerCapture(d.pointer);
     }
     draw(renderer) {
       const ctx = renderer.ctx;
+      if (this.guides) {
+        ctx.save();
+        ctx.strokeStyle = "rgba(255,255,255,0.6)";
+        ctx.setLineDash([6, 6]);
+        for (const g of this.guides) {
+          ctx.setLineDash([6, 6]);
+          ctx.beginPath();
+          if (g.type === "circle") {
+            ctx.arc(g.x, g.y, g.r, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.fillStyle = "#dcebdc";
+            ctx.strokeStyle = "#dcebdc";
+            ctx.lineWidth = 2;
+            ctx.setLineDash([]);
+            
+            // Center handle: Move (Solid circle)
+            ctx.beginPath(); ctx.arc(g.x, g.y, 7, 0, Math.PI * 2); ctx.fill();
+            
+            // Right handle: Resize (Square)
+            ctx.fillRect(g.x + g.r - 7, g.y - 7, 14, 14);
+          } else if (g.type === "line") {
+            const len = g.length || 150;
+            const dx = Math.cos(g.angle) * len;
+            const dy = Math.sin(g.angle) * len;
+            ctx.moveTo(g.x - dx, g.y - dy);
+            ctx.lineTo(g.x + dx, g.y + dy);
+            ctx.stroke();
+            
+            ctx.fillStyle = "#dcebdc";
+            ctx.strokeStyle = "#dcebdc";
+            ctx.lineWidth = 2;
+            ctx.setLineDash([]);
+            
+            // Center handle: Move (Solid circle, slightly smaller)
+            ctx.beginPath(); ctx.arc(g.x, g.y, 7, 0, Math.PI * 2); ctx.fill();
+            
+            // Right handle: Rotate (Hollow circle with dot)
+            ctx.beginPath(); ctx.arc(g.x + dx, g.y + dy, 8, 0, Math.PI * 2); ctx.stroke();
+            ctx.beginPath(); ctx.arc(g.x + dx, g.y + dy, 3, 0, Math.PI * 2); ctx.fill();
+            
+            // Left handle: Resize (Square)
+            ctx.fillRect(g.x - dx - 7, g.y - dy - 7, 14, 14);
+          }
+        }
+        ctx.restore();
+      }
       if (this.selected !== null) {
         const o = this.layout.orbs.find((o) => o.id === this.selected);
         if (o) {
@@ -253,3 +399,19 @@
     }
   };
 })(Resonance);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -20,6 +20,7 @@
     complete: { file: "core-complete.mp3", gain: 0.75 },
     fail: { file: "round-failed.mp3", gain: 0.4 },
     collision: { file: "collision.mp3", gain: 0.25 },
+    "ui-click": { file: "ui-click.mp3", gain: 0.2 },
   };
   R.Audio = class {
     constructor() {
@@ -31,18 +32,52 @@
       this.fallback = R.Config.audio.fallback;
       this.last = {};
       this.loaded = 0;
+      this.effectsGain = null;
+      this.musicGain = null;
+      this.musicSource = null;
+      this.musicTracks = [];
+      this.musicIndex = -1;
+      this.effectsVolume = 1;
+      this.musicVolume = 1;
+      try {
+        const ev = localStorage.getItem("resonance.effectsVolume");
+        if (ev !== null) this.effectsVolume = parseFloat(ev);
+        const mv = localStorage.getItem("resonance.musicVolume");
+        if (mv !== null) this.musicVolume = parseFloat(mv);
+      } catch (_) {}
+    }
+    getMusicMax() {
+      const cfg = R.Config?.audio;
+      const val = cfg?.musicMax ?? cfg?.music_max;
+      return typeof val === "number" ? val : 0.43;
     }
     async start() {
       if (!this.ctx) {
         const C = window.AudioContext || window.webkitAudioContext;
         if (!C) return;
         this.ctx = new C();
-        this.master = this.ctx.createGain();
-        this.master.gain.value = R.Config.audio.master;
+          document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === "visible") {
+              if (this.ctx && this.ctx.state === "suspended") {
+                this.ctx.resume().then(() => {
+                  if (!this.musicSource && this.musicTracks.length && !this.muted && this.musicVolume > 0) {
+                    this.startMusic();
+                  }
+                }).catch(() => {});
+              } else if (!this.musicSource && this.musicTracks.length && !this.muted && this.musicVolume > 0) {
+                this.startMusic();
+              }
+            }
+          });
+        this.effectsGain = this.ctx.createGain();
+        this.musicGain = this.ctx.createGain();
+        this.effectsGain.gain.value = this.effectsVolume;
+        this.musicGain.gain.value = this.musicVolume * this.getMusicMax();
         const limiter = this.ctx.createDynamicsCompressor();
         limiter.threshold.value = -16;
         limiter.ratio.value = 5;
-        this.master.connect(limiter);
+        this.effectsGain.connect(limiter);
+        this.musicGain.connect(limiter);
         limiter.connect(this.ctx.destination);
         this.noise = this.ctx.createBuffer(
           1,
@@ -53,8 +88,12 @@
         for (let i = 0; i < values.length; i++)
           values[i] = Math.random() * 2 - 1;
         this.load();
+        this.loadMusic();
       }
       if (this.ctx.state === "suspended") await this.ctx.resume();
+      if (!this.musicSource && this.musicTracks.length && !this.muted && this.musicVolume > 0) {
+        this.startMusic();
+      }
     }
     async load() {
       await Promise.all(
@@ -72,25 +111,106 @@
         }),
       );
     }
+    setEffectsVolume(value) {
+      this.effectsVolume = value;
+      if (this.effectsGain) this.effectsGain.gain.value = this.muted ? 0 : value;
+      try {
+        localStorage.setItem("resonance.effectsVolume", value);
+      } catch (_) {}
+    }
+    setMusicVolume(value) {
+        const wasOff = this.musicVolume === 0;
+        this.musicVolume = value;
+        if (this.musicGain) this.musicGain.gain.value = this.muted ? 0 : value * this.getMusicMax();
+        try {
+          localStorage.setItem("resonance.musicVolume", value);
+        } catch (_) {}
+        if (value === 0) this.stopMusic();
+        else if (wasOff && !this.musicSource) this.startMusic();
+      }
     volume(value) {
-      if (this.master) this.master.gain.value = this.muted ? 0 : value;
-      R.Config.audio.master = value;
+      this.setEffectsVolume(value);
     }
     mute(value) {
       this.muted = value;
-      this.volume(R.Config.audio.master);
+      if (this.effectsGain) this.effectsGain.gain.value = value ? 0 : this.effectsVolume;
+      if (this.musicGain) this.musicGain.gain.value = value ? 0 : this.musicVolume * this.getMusicMax();
     }
     stop() {
       for (const node of this.nodes) {
-        try {
-          node.stop();
-        } catch {}
+          if (node.isUI) continue;
+          try { node.stop(); } catch {}
+        }
       }
-      this.nodes.clear();
-    }
     suspend() {
       this.stop();
       if (this.ctx?.state === "running") this.ctx.suspend().catch(() => {});
+    }
+    async loadMusic() {
+      try {
+        const res = await fetch("assets/music/playlist.json");
+        if (!res.ok) return;
+        const list = await res.json();
+        if (!Array.isArray(list) || !list.length) return;
+        for (const file of list) {
+          try {
+            const r = await fetch("assets/music/" + file);
+            if (!r.ok) continue;
+            const buf = await this.ctx.decodeAudioData(await r.arrayBuffer());
+            this.musicTracks.push(buf);
+          } catch { /* Fehlende Musikdateien sind erlaubt */ }
+        }
+        this.startMusic();
+      } catch { /* Keine Playlist → keine Musik, kein Fehler */ }
+    }
+    startMusic() {
+      if (!this.musicTracks.length || this.musicVolume === 0 || this.muted) return;
+      let nextIndex = this.musicIndex;
+      if (this.musicTracks.length > 1) {
+        while (nextIndex === this.musicIndex) {
+          nextIndex = Math.floor(Math.random() * this.musicTracks.length);
+        }
+      } else {
+        nextIndex = 0;
+      }
+      this.musicIndex = nextIndex;
+      this.musicSource = this.ctx.createBufferSource();
+      this.musicSource.buffer = this.musicTracks[this.musicIndex];
+      this.musicSource.connect(this.musicGain);
+      this.musicSource.onended = () => this.startMusic();
+      this.musicSource.start();
+    }
+    stopMusic() {
+      if (this.musicSource) {
+        this.musicSource.onended = null;
+        try { this.musicSource.stop(); } catch {}
+        this.musicSource.disconnect();
+        this.musicSource = null;
+      }
+    }
+    dimMusic() {
+      if (this.musicGain && this.ctx) {
+        const target = (this.muted ? 0 : this.musicVolume * this.getMusicMax()) * 0.3;
+        try {
+          this.musicGain.gain.cancelScheduledValues(this.ctx.currentTime);
+          this.musicGain.gain.setValueAtTime(this.musicGain.gain.value, this.ctx.currentTime);
+          this.musicGain.gain.linearRampToValueAtTime(target, this.ctx.currentTime + 0.3);
+        } catch (_) {
+          this.musicGain.gain.value = target;
+        }
+      }
+    }
+    restoreMusic() {
+      if (this.musicGain && this.ctx) {
+        const target = this.muted ? 0 : this.musicVolume * this.getMusicMax();
+        try {
+          this.musicGain.gain.cancelScheduledValues(this.ctx.currentTime);
+          this.musicGain.gain.setValueAtTime(this.musicGain.gain.value, this.ctx.currentTime);
+          this.musicGain.gain.linearRampToValueAtTime(target, this.ctx.currentTime + 0.3);
+        } catch (_) {
+          this.musicGain.gain.value = target;
+        }
+      }
     }
     play(key, data = {}) {
       if (!this.ctx || this.ctx.state !== "running" || this.muted) return;
@@ -120,6 +240,7 @@
       if (this.buffers[key]) {
         const source = this.ctx.createBufferSource();
         source.buffer = this.buffers[key];
+          source.isUI = (key === "ui-click");
         if (key === "energy")
           source.playbackRate.value =
             2 ** ([0, 3, 5, 7, 10][(data.index || 0) % 5] / 12);
@@ -155,10 +276,12 @@
         fail: [110, 0.8],
         "green-hit": [392, 0.2],
         "gold-hit": [440, 0.3],
+        "ui-click": [880, 0.06],
       };
       const [f, d] = map[key] || [220, 0.2];
       const osc = this.ctx.createOscillator();
       osc.type = "sine";
+        osc.isUI = (key === "ui-click");
       osc.frequency.setValueAtTime(key === "blue" ? f * 0.65 : f, now);
       osc.frequency.exponentialRampToValueAtTime(
         key === "blue" ? f : key === "red" ? f * 0.65 : f * 0.99,
@@ -191,7 +314,7 @@
         now + Math.max(attack + 0.01, duration),
       );
       upstream.connect(gain);
-      gain.connect(this.master);
+      gain.connect(this.effectsGain);
       this.voices++;
       this.nodes.add(source);
       source.onended = () => {
@@ -206,3 +329,9 @@
     }
   };
 })(Resonance);
+
+
+
+
+
+

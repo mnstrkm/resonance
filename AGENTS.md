@@ -15,6 +15,8 @@ Diese Datei enthält Kontext, Verhaltensregeln und Richtlinien für KI-Codierung
   - `js/state.js` & `js/chain.js`: Enthalten die reine Spiellogik (Spielzustand, Orbs, Fähigkeiten).
   - `js/renderer.js`: Zeichnet ausschließlich den aktuellen Zustand. Der Renderer darf **niemals** Spiellogik ausführen oder Spielzustände verändern.
   - `js/ui.js`: Steuert die DOM-Menüs und HTML-Overlays.
+  - `js/audio.js`: Verwaltet Soundeffekte und Hintergrundmusik.
+  - `js/level-loader.js`: Lädt externe JSON-Leveldateien asynchron.
 
 *(Weitere Details zur Systemarchitektur stehen in der `ARCHITECTURE.md`)*
 

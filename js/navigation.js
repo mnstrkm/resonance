@@ -19,6 +19,7 @@
         const state = event.state;
         if (state?.resonance === this.token) {
           this.depth = state.depth;
+          this.entries = this.entries.slice(0, this.depth + 1);
           this.route = state.route;
           this.entries[this.depth] = this.route;
           this.render(this.route);

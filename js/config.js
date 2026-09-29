@@ -37,11 +37,12 @@ Resonance.Config = {
   },
   audio: {
     master: 1,
-    effects: 0.7,
-    core: 0.65,
-    collision: 0.22,
+    musicMax: 0.2,
+    effects: 0.9,
+    core: 0.75,
+    collision: 0.32,
     fallback: true,
-    maxVoices: 18,
+    maxVoices: 28,
   },
   abilities: {
     red: { radius: 100, force: 150 },

@@ -45,7 +45,12 @@
       this.accumulator = 0;
       this.last = 0;
       if (value) this.audio.stop();
-      else this.audio.start().catch(() => {});
+      else {
+        this.audio.start().catch(() => {});
+        if (!this.audio.musicSource && this.audio.musicTracks.length && !this.audio.muted && this.audio.musicVolume > 0) {
+          this.audio.startMusic();
+        }
+      }
     }
     setSpeed(value) {
       if (![0.5, 1, 2].includes(value)) return;
@@ -70,11 +75,12 @@
         }
       }
     }
-    newRound(seed = R.createSeed(), snapshot = null) {
+    newRound(seed = R.createSeed(), snapshot = null, modeData = null) {
       this.input.cancel();
       this.audio.stop();
       this.particles.clear();
-      this.state = R.createState(seed, this.mode, snapshot);
+      const md = modeData || (this.state && this.state.mode === this.mode ? this.state.modeData : {});
+      this.state = R.createState(seed, this.mode, snapshot, md);
       this.chain = new R.Chain(this.state, (n, d) => this.event(n, d));
       this.fullPlayed = false;
       this.accumulator = 0;
@@ -82,7 +88,8 @@
       this.ui.defaultHint();
     }
     retry() {
-      this.newRound(this.state.seed, this.state.snapshot);
+      const md = this.state?.modeData ? JSON.parse(JSON.stringify(this.state.modeData)) : {};
+      this.newRound(this.state.seed, this.state.snapshot, md);
     }
     commit(id, x, y) {
       const s = this.state;
@@ -115,6 +122,14 @@
           if (outcome === "won") {
             s.phase = "complete";
             s.completeTime = 0;
+            if (s.mode === "level" && s.modeData.levelId) {
+              const stars = R.Stars(s);
+              try {
+                const ls = JSON.parse(localStorage.getItem("resonance.stars.v1") || "{}");
+                ls[s.modeData.levelId] = Math.max(ls[s.modeData.levelId] || 0, stars);
+                localStorage.setItem("resonance.stars.v1", JSON.stringify(ls));
+              } catch (_) {}
+            }
             this.ui.hint("Der Core findet seine Resonanz.");
             this.event("complete", {
               x: R.Config.arena.width / 2,
@@ -122,13 +137,19 @@
               color: "#e9dcbf",
             });
           } else if (outcome === "lost") {
-            s.phase = "lost";
-            this.ui.result(false);
-            this.audio.play("fail");
+            s.phase = "lost_wait";
+            s.lostTime = 0;
           } else {
             s.phase = "ready";
             this.ui.defaultHint();
           }
+        }
+      } else if (s.phase === "lost_wait") {
+        s.lostTime += dt;
+        if (s.lostTime >= 0.8) {
+          s.phase = "lost";
+          this.ui.result(false);
+          this.audio.play("fail");
         }
       } else if (s.phase === "complete") {
         s.completeTime += dt;

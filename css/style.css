@@ -704,9 +704,7 @@ input[type="range"] {
   position: relative;
   margin-top: 8px;
 }
-.editor-toolbar {
-  display: flex;
-  gap: 5px;
+.editor-toolbar { display: flex; flex-wrap: wrap; gap: 5px;
   justify-content: center;
   align-items: center;
 }
@@ -790,3 +788,115 @@ input[type="range"] {
     flex-basis: 40px;
   }
 }
+
+/* --- Modes Animation --- */
+.welcome .mode-selection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: absolute;
+  top: calc(50% + 40px);
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(370px, calc(100% - 40px));
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+.welcome.show-modes .mode-selection {
+  opacity: 1;
+  pointer-events: auto;
+}
+.welcome.show-modes .tagline,
+.welcome.show-modes .intro,
+.welcome.show-modes .welcome-hint,
+.welcome.show-modes #start,
+.welcome.show-modes h1,
+.welcome.show-modes .eyebrow {
+  opacity: 0;
+  pointer-events: none;
+}
+.welcome .tagline,
+.welcome .intro,
+.welcome .welcome-hint,
+.welcome #start,
+.welcome h1,
+.welcome .eyebrow {
+  transition: opacity 0.4s ease;
+}
+.welcome-art {
+  transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.8s ease;
+}
+.welcome.show-modes .welcome-art {
+  transform: scale(0.7) translateY(-30px) rotate(360deg);
+}
+@media (max-width: 480px) and (max-height: 800px) {
+  .welcome.show-modes .welcome-art {
+    transform: scale(0.5) translateY(-20px) rotate(360deg);
+  }
+}
+
+/* --- Tutorial Overlay --- */
+.tutorial-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #17232ee6;
+  border: 1px solid #ffffff12;
+  border-radius: 16px;
+  padding: 24px;
+  width: 85%;
+  max-width: 300px;
+  text-align: center;
+  z-index: 10;
+  pointer-events: auto;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  backdrop-filter: blur(8px);
+  color: var(--ink);
+}
+.tutorial-overlay p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.tutorial-overlay .tutorial-hint {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 18px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* --- Levels --- */
+.level-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ffffff12;
+  border-radius: 12px;
+  background: #ffffff06;
+  transition: transform 0.1s, background 0.2s;
+  padding: 10px 0;
+}
+.level-button:hover:not(:disabled) {
+  background: #ffffff10;
+}
+.level-button:active:not(:disabled) {
+  transform: scale(0.95);
+}
+.level-button.locked {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.level-num {
+  font-size: 18px;
+  font-weight: 500;
+}
+.levels-card {
+  max-width: 460px;
+}
+
+
