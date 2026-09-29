@@ -140,8 +140,8 @@
         else if (route.panel === "result") this.showResult();
         else if (route.panel === "export") this.showExport();
       } else if (
-        !home &&
-        !editing &&
+        route.screen === "game" &&
+        !route.panel &&
         ["won", "lost"].includes(this.game.state.phase)
       ) {
         // A result is a state of this round, not a fresh history entry.
@@ -294,7 +294,8 @@
     }
     showPause() {
       const editor = this.nav.route.screen === "editor",
-        custom = this.game.mode === "editor";
+        custom = this.game.mode === "editor",
+        levelMode = this.game.mode === "level";
       this.game.audio.dimMusic?.();
       this.open(
         `<div class="menu-heading"><h2>Pause</h2>${iconButton("go-home", "home", "Hauptmenü")}</div>
@@ -302,9 +303,9 @@
         <label class="volume-row">Musik <input id="vol-music" type="range" min="0" max="1" step="0.05" value="${this.game.audio.musicVolume !== undefined ? this.game.audio.musicVolume : 1}"></label>
         <label class="volume-row">Spielsounds <input id="vol-effects" type="range" min="0" max="1" step="0.05" value="${this.game.audio.effectsVolume !== undefined ? this.game.audio.effectsVolume : 1}"></label>
         <button class="primary" id="resume">${editor ? "Weiter bearbeiten" : "Weiterspielen"}</button>
-        ${editor ? "" : `<div class="button-row"><button id="retry">Neu versuchen</button><button id="next-action">${custom ? "Zum Editor" : "Neues Feld"}</button></div>`}
+        ${editor ? "" : `<div class="button-row"><button id="retry">Neu versuchen</button><button id="next-action">${custom ? "Zum Editor" : levelMode ? "Levelauswahl" : "Neues Feld"}</button></div>`}
         <div class="menu-links"><button class="text-button" id="guide">Anleitung</button><button class="text-button" id="settings">Einstellungen</button></div>
-        <div class="menu-foot">${!editor && !custom && this.game.state.seed ? `<button class="seed-button" id="seed-menu">Feld ${this.game.state.seed.toString(36).toUpperCase()}</button>` : "<span></span>"}<span class="version">v${R.version}</span></div>`,
+        <div class="menu-foot">${!editor && !custom && !levelMode && this.game.state.seed ? `<button class="seed-button" id="seed-menu">Feld ${this.game.state.seed.toString(36).toUpperCase()}</button>` : "<span></span>"}<span class="version">v${R.version}</span></div>`,
         "pause-card",
       );
       $("go-home").onclick = () => { this.game.audio.play("ui-click"); this.game.audio.restoreMusic?.(); this.home(); };
@@ -335,6 +336,7 @@
           this.game.audio.play("ui-click");
           this.game.audio.restoreMusic?.();
           if (custom) this.enterEditor();
+          else if (levelMode) this.nav.go({ screen: "levels" });
           else {
             this.game.newRound();
             this.close();
@@ -385,19 +387,64 @@
     showResult() {
       const s = this.game.state,
         won = s.phase === "won",
-        custom = this.game.mode === "editor";
+        custom = this.game.mode === "editor",
+        levelMode = this.game.mode === "level";
+      
       const used = s.initialImpulses - s.impulses;
+      let starsHtml = "";
+      if (levelMode && won) {
+        const stars = R.Stars(s);
+        starsHtml = `<div class="stars-result" style="font-size: 32px; text-align: center; margin: 15px 0; display: flex; justify-content: center; gap: 10px;">`;
+        for (let i = 0; i < 3; i++) {
+          starsHtml += `<span style="color:${i < stars ? "var(--accent)" : "rgba(255,255,255,0.15)"}; filter: drop-shadow(0 0 8px ${i < stars ? "var(--accent)" : "transparent"});">★</span>`;
+        }
+        starsHtml += `</div>`;
+      }
+
+      let btnPrimary = custom || !won ? "Noch einmal versuchen" : "Neues Feld";
+      let btnSecondary = custom ? "Zum Editor" : won ? "Diesen Aufbau wiederholen" : "Neues Feld";
+      if (levelMode) {
+        btnPrimary = won ? "Nächstes Level" : "Noch einmal versuchen";
+        btnSecondary = "Levelauswahl";
+      }
+
       this.open(
-        `<div class="menu-heading"><span class="eyebrow">${won ? "RESONANZ ERREICHT" : "DIE ENERGIE KLINGT AUS"}</span>${iconButton("go-home", "home", "Hauptmenü")}</div><h2>${won ? "Alles im Einklang." : "Ein anderer Impuls."}</h2><p class="intro">${won ? `${s.energy} Orbs · ${used} ${used === 1 ? "Impuls" : "Impulse"}` : `${s.energy} von ${s.required} Energie gesammelt.`}</p><button class="primary" id="next">${custom || !won ? "Noch einmal versuchen" : "Neues Feld"}</button><button id="secondary">${custom ? "Zum Editor" : won ? "Diesen Aufbau wiederholen" : "Neues Feld"}</button>`,
+        `<div class="menu-heading"><span class="eyebrow">${won ? (levelMode ? "LEVEL GESCHAFFT" : "RESONANZ ERREICHT") : (levelMode ? "LEVEL FEHLGESCHLAGEN" : "DIE ENERGIE KLINGT AUS")}</span>${iconButton("go-home", "home", "Hauptmenü")}</div><h2>${won ? "Alles im Einklang." : "Ein anderer Impuls."}</h2><p class="intro">${won ? `${s.energy} Orbs — ${used} ${used === 1 ? "Impuls" : "Impulse"}` : `${s.energy} von ${s.required} Energie gesammelt.`}</p>${starsHtml}<button class="primary" id="next">${btnPrimary}</button><button id="secondary">${btnSecondary}</button>`,
         "result-card",
       );
+
       const again = (retry) => {
         retry ? this.game.retry() : this.game.newRound();
         this.nav.go({ screen: "game" }, true);
       };
+      
       $("go-home").onclick = () => { this.game.audio.play("ui-click"); this.home(); };
-      $("next").onclick = () => { this.game.audio.play("ui-click"); again(custom || !won); };
-      $("secondary").onclick = () => { this.game.audio.play("ui-click"); (custom ? this.enterEditor() : again(won)); };
+      
+      $("next").onclick = () => { 
+        this.game.audio.play("ui-click"); 
+        if (levelMode && won) {
+          const nextId = String(Number(s.modeData.levelId) + 1).padStart(2, "0");
+          const nextData = R.LevelLoader.get(nextId);
+          if (nextData) {
+            this.game.newRound(nextData.layout.seed, nextData.layout);
+            this.game.state.modeData = { levelId: nextId };
+            this.nav.go({ screen: "game" }, true);
+          } else {
+            this.nav.go({ screen: "levels" });
+          }
+        } else {
+          again(custom || !won); 
+        }
+      };
+      
+      $("secondary").onclick = () => { 
+        this.game.audio.play("ui-click"); 
+        if (levelMode) {
+          this.nav.go({ screen: "levels" });
+        } else {
+          (custom ? this.enterEditor() : again(won)); 
+        }
+      };
     }
     seedDialog() {
       this.panel("seed");
