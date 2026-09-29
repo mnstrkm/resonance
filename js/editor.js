@@ -35,7 +35,7 @@
       }
     }
     remember() {
-      this.history.push(copy(this.layout));
+      this.history.push({ layout: copy(this.layout), guides: copy(this.guides || []) });
       if (this.history.length > 40) this.history.shift();
     }
     changed() {
@@ -84,7 +84,13 @@
     }
     undo() {
       if (!this.history.length) return;
-      this.layout = this.history.pop();
+      const state = this.history.pop();
+      if (state && state.guides !== undefined) {
+        this.layout = state.layout;
+        this.guides = state.guides;
+      } else {
+        this.layout = state;
+      }
       this.selected = null;
       this.changed();
     }
@@ -107,12 +113,14 @@
       setTimeout(() => URL.revokeObjectURL(url), 1000);
     }
     addGuide(type) {
+      this.remember();
       if (!this.guides) this.guides = [];
       if (type === "line") this.guides.push({ id: 'g' + Date.now(), type: 'line', x: 195, y: 310, angle: 0, length: 150 });
       if (type === "circle") this.guides.push({ id: 'g' + Date.now(), type: 'circle', x: 195, y: 310, r: 100 });
       this.refresh();
     }
     resetGuides() {
+      this.remember();
       this.guides = [];
       this.refresh();
     }
@@ -137,21 +145,31 @@
           const g = this.guides[i];
           if (g.type === "circle") {
             if (Math.hypot(g.x - p.x, g.y - p.y) < 20) {
+              this.remember();
               this.drag = { pointer: e.pointerId, kind: 'guide_move', g, offsetX: g.x - p.x, offsetY: g.y - p.y, valid: true }; break;
             }
             if (Math.hypot((g.x + g.r) - p.x, g.y - p.y) < 20) {
+              this.remember();
               this.drag = { pointer: e.pointerId, kind: 'guide_resize', g, valid: true }; break;
             }
           } else if (g.type === "line") {
             if (Math.hypot(g.x - p.x, g.y - p.y) < 20) {
+              this.remember();
               this.drag = { pointer: e.pointerId, kind: 'guide_move', g, offsetX: g.x - p.x, offsetY: g.y - p.y, valid: true }; break;
             }
             const len = g.length || 150;
-              const hx = g.x + Math.cos(g.angle) * len;
-              const hy = g.y + Math.sin(g.angle) * len;
-              if (Math.hypot(hx - p.x, hy - p.y) < 20) {
-                this.drag = { pointer: e.pointerId, kind: 'guide_rotate_resize', g, valid: true }; break;
-              }
+            const hxRight = g.x + Math.cos(g.angle) * len;
+            const hyRight = g.y + Math.sin(g.angle) * len;
+            if (Math.hypot(hxRight - p.x, hyRight - p.y) < 20) {
+              this.remember();
+              this.drag = { pointer: e.pointerId, kind: 'guide_rotate', g, valid: true }; break;
+            }
+            const hxLeft = g.x - Math.cos(g.angle) * len;
+            const hyLeft = g.y - Math.sin(g.angle) * len;
+            if (Math.hypot(hxLeft - p.x, hyLeft - p.y) < 20) {
+              this.remember();
+              this.drag = { pointer: e.pointerId, kind: 'guide_resize_line', g, valid: true }; break;
+            }
           }
         }
       }
@@ -220,6 +238,10 @@
         d.g.angle = Math.atan2(p.y - d.g.y, p.x - d.g.x);
         this.game.ui.updateEditor(); return;
       }
+      if (d.kind === 'guide_resize_line') {
+        d.g.length = Math.max(20, Math.hypot(p.x - d.g.x, p.y - d.g.y));
+        this.game.ui.updateEditor(); return;
+      }
 
       if (this.guides && (d.kind === 'move' || d.kind === 'add')) {
         for (const g of this.guides) {
@@ -278,7 +300,7 @@
       }
       if (d.valid) {
         if (d.kind === "move") this.move(d.id, d.x, d.y);
-        else this.add(d.type, d.x, d.y);
+        else if (d.kind === "add") this.add(d.type, d.x, d.y);
       }
       this.game.ui.updateEditor();
     }
@@ -306,8 +328,8 @@
             ctx.beginPath(); ctx.arc(g.x + g.r, g.y, 10, 0, Math.PI * 2); ctx.fill();
           } else if (g.type === "line") {
             const len = g.length || 150;
-              const dx = Math.cos(g.angle) * len;
-              const dy = Math.sin(g.angle) * len;
+            const dx = Math.cos(g.angle) * len;
+            const dy = Math.sin(g.angle) * len;
             ctx.moveTo(g.x - dx, g.y - dy);
             ctx.lineTo(g.x + dx, g.y + dy);
             ctx.stroke();
@@ -315,6 +337,7 @@
             ctx.setLineDash([]);
             ctx.beginPath(); ctx.arc(g.x, g.y, 10, 0, Math.PI * 2); ctx.fill();
             ctx.beginPath(); ctx.arc(g.x + dx, g.y + dy, 10, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(g.x - dx, g.y - dy, 10, 0, Math.PI * 2); ctx.fill();
           }
         }
         ctx.restore();
