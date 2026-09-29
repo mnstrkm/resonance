@@ -47,6 +47,11 @@
         const C = window.AudioContext || window.webkitAudioContext;
         if (!C) return;
         this.ctx = new C();
+          document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === "visible" && this.ctx.state === "suspended") {
+              this.ctx.resume().catch(() => {});
+            }
+          });
         this.effectsGain = this.ctx.createGain();
         this.musicGain = this.ctx.createGain();
         this.effectsGain.gain.value = this.effectsVolume;
@@ -92,10 +97,13 @@
       localStorage.setItem("resonance.effectsVolume", value);
     }
     setMusicVolume(value) {
-      this.musicVolume = value;
-      if (this.musicGain) this.musicGain.gain.value = this.muted ? 0 : value * (R.Config.audio.musicMax || 1);
-      localStorage.setItem("resonance.musicVolume", value);
-    }
+        const wasOff = this.musicVolume === 0;
+        this.musicVolume = value;
+        if (this.musicGain) this.musicGain.gain.value = this.muted ? 0 : value * (R.Config.audio.musicMax || 1);
+        localStorage.setItem("resonance.musicVolume", value);
+        if (value === 0) this.stopMusic();
+        else if (wasOff && !this.musicSource) this.startMusic();
+      }
     volume(value) {
       this.setEffectsVolume(value);
     }
@@ -133,7 +141,7 @@
       } catch { /* Keine Playlist → keine Musik, kein Fehler */ }
     }
     startMusic() {
-      if (!this.musicTracks.length) return;
+      if (!this.musicTracks.length || this.musicVolume === 0 || this.muted) return;
       let nextIndex = this.musicIndex;
       if (this.musicTracks.length > 1) {
         while (nextIndex === this.musicIndex) {
@@ -290,6 +298,9 @@
     }
   };
 })(Resonance);
+
+
+
 
 
 
