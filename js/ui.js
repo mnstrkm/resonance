@@ -319,7 +319,7 @@
         levelMode = this.game.mode === "level";
       this.game.audio.dimMusic?.();
       this.open(
-        `<div class="menu-heading"><h2>${this.game.mode === `"level`" ? `"Level `" + Number(this.game.state.modeData?.levelId) + `" - Pause`" : `"Pause`"}</h2>${iconButton("go-home", "home", "Hauptmenü")}</div>
+        `<div class="menu-heading"><h2>${this.game.mode === "level" ? "Level " + Number(this.game.state.modeData?.levelId) + " - Pause" : "Pause"}</h2>${iconButton("go-home", "home", "Hauptmenü")}</div>
         <div class="speed-setting"><span id="speed-label">Geschwindigkeit</span><div class="speed-options" role="group" aria-labelledby="speed-label">${[0.5, 1, 2].map((speed) => `<button type="button" data-speed="${speed}" aria-pressed="${this.game.speed === speed}">${String(speed).replace(".", ",")}×</button>`).join("")}</div></div>
         <label class="volume-row">Musik <input id="vol-music" type="range" min="0" max="1" step="0.05" value="${this.game.audio.musicVolume !== undefined ? this.game.audio.musicVolume : 1}"></label>
         <label class="volume-row">Spielsounds <input id="vol-effects" type="range" min="0" max="1" step="0.05" value="${this.game.audio.effectsVolume !== undefined ? this.game.audio.effectsVolume : 1}"></label>
@@ -628,6 +628,7 @@
     }
   };
 })(Resonance);
+
 
 
 
