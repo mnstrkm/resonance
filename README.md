@@ -51,7 +51,7 @@ Die zentralen Zahlen stehen in [js/config.js](js/config.js). Distanzen sind **lo
 | Physik: Abbremsen / Abprallen | `physics.damping` / `restitution` | 1,9 / 0,64 |
 | Radius von Druck, Sog und Pulsar | `abilities.red/blue/violet.radius` | jeweils 100 |
 | Reichweite des Pfeils | `abilities.green.radius` | 175 |
-| Maximale Musik-Lautstärke | `audio.musicMax` | 0,35 |
+| Maximale Musik-Lautstärke | `audio.musicMax` | 0,43 |
 | Aura: eigener Radius / Kraft / Reichweite | `abilities.orange.radius` / `multiplier` / `rangeMultiplier` | 70 / 1,80 / 1,20 |
 
 Die Zielzahl für **Eigenes Feld** entspricht unabhängig von `requiredRatio` immer der Anzahl der platzierten Orbs; der Modus steht in [js/state.js](js/state.js). Geschwindigkeitseinstellungen im Pausenmenü ändern das Spieltempo, nicht die Reichweiten. Orange verstärkt direkt aktivierte rote, blaue, violette und grüne Orbs; ein direkt aktiviertes Orange hat eine größere Aura. Gold und die Fähigkeit des Spiegels bleiben bei ihrer gewohnten Wirkung. Der Bonus wird nicht durch andere Orb-Typen weitergegeben oder nachträglich auf bereits ladende Orbs angewandt. Für eine Balanceänderung möglichst nur einen Wert auf einmal ändern und anschließend dasselbe Feld erneut testen.
