@@ -249,8 +249,8 @@
             this.game.audio.play("ui-click");
             const id = btn.dataset.level;
             const data = R.LevelLoader.get(id);
-            this.game.newRound(data.seed, data);
-            this.game.state.mode = "level";
+            this.game.mode = "level";
+            this.game.newRound(data.layout.seed, data.layout);
             this.game.state.modeData = { levelId: id };
             this.nav.go({ screen: "game" });
           };
@@ -341,9 +341,9 @@
           }
         };
       }
-      $("guide").onclick = () => this.help();
-      $("settings").onclick = () => this.panel("settings");
-      if ($("seed-menu")) $("seed-menu").onclick = () => this.panel("seed");
+      $("guide").onclick = () => { this.game.audio.play("ui-click"); this.help(); };
+      $("settings").onclick = () => { this.game.audio.play("ui-click"); this.panel("settings"); };
+      if ($("seed-menu")) $("seed-menu").onclick = () => { this.game.audio.play("ui-click"); this.panel("seed"); };
     }
     header(title) {
       return `<div class="menu-heading sticky-heading"><h2>${title}</h2>${iconButton("close-panel", "close", "Schließen")}</div>`;
@@ -353,7 +353,7 @@
       this.open(
         `${this.header("Einstellungen")}<div class="settings"><label class="check"><input id="fallback" type="checkbox" ${a.fallback ? "checked" : ""}> Synthetische Vorschauklänge</label><label class="check"><input id="motion" type="checkbox" ${R.Config.effects.reducedMotion ? "checked" : ""}> Weniger Partikel & Lichtbewegung</label></div><button id="back">Zurück</button>`,
       );
-      $("close-panel").onclick = $("back").onclick = () => this.close();
+      $("close-panel").onclick = $("back").onclick = () => { this.game.audio.play("ui-click"); this.close(); };
       $("fallback").onchange = (e) => (a.fallback = e.target.checked);
       $("motion").onchange = (e) =>
         (R.Config.effects.reducedMotion = e.target.checked);
@@ -377,7 +377,7 @@
         "help-card",
       );
       this.drawIcons(this.modal);
-      $("close-panel").onclick = $("back").onclick = () => this.close();
+      $("close-panel").onclick = $("back").onclick = () => { this.game.audio.play("ui-click"); this.close(); };
     }
     result(won) {
       this.nav.go({ screen: "game", panel: "result" }, true);
@@ -395,9 +395,9 @@
         retry ? this.game.retry() : this.game.newRound();
         this.nav.go({ screen: "game" }, true);
       };
-      $("go-home").onclick = () => this.home();
-      $("next").onclick = () => again(custom || !won);
-      $("secondary").onclick = () => (custom ? this.enterEditor() : again(won));
+      $("go-home").onclick = () => { this.game.audio.play("ui-click"); this.home(); };
+      $("next").onclick = () => { this.game.audio.play("ui-click"); again(custom || !won); };
+      $("secondary").onclick = () => { this.game.audio.play("ui-click"); (custom ? this.enterEditor() : again(won)); };
     }
     seedDialog() {
       this.panel("seed");
@@ -406,8 +406,8 @@
       this.open(
         `${this.header("Feld-Code")}<p class="intro">Bei gleicher Spielversion und Config entsteht derselbe Aufbau.</p><input id="seed-input" class="seed-input" maxlength="7" value="${this.game.state.seed.toString(36).toUpperCase()}" aria-label="Feld-Code"><p id="seed-error" class="muted"></p><button class="primary" id="load-seed">Feld laden</button><button id="close-seed">Abbrechen</button>`,
       );
-      $("close-panel").onclick = $("close-seed").onclick = () => this.close();
-      $("load-seed").onclick = () => {
+      $("close-panel").onclick = $("close-seed").onclick = () => { this.game.audio.play("ui-click"); this.close(); };
+      $("load-seed").onclick = () => { this.game.audio.play("ui-click");
         const value = $("seed-input").value.trim(),
           seed = parseInt(value, 36);
         if (
@@ -484,7 +484,7 @@
         )
         .join("");
       this.drawIcons($("orb-palette"));
-      $("palette-toggle").onclick = () => {
+      $("palette-toggle").onclick = () => { this.game.audio.play("ui-click");
         $("orb-palette").hidden = !$("orb-palette").hidden;
         $("palette-toggle").setAttribute(
           "aria-expanded",
@@ -503,17 +503,16 @@
           button.addEventListener("pointercancel", () => editor.cancel());
           button.addEventListener("lostpointercapture", () => editor.cancel());
           button.onclick = (e) => {
-            if (e.detail === 0) {
-              editor.type = button.dataset.type;
+            if (e.detail === 0) { this.game.audio.play("ui-click"); editor.type = button.dataset.type;
               editor.selected = null;
               this.updateEditor();
             }
           };
         });
-      $("editor-undo").onclick = () => editor.undo();
-      $("editor-reset").onclick = () => editor.reset();
-      $("editor-delete").onclick = () => editor.remove();
-      $("editor-play").onclick = () => this.playEditor();
+      $("editor-undo").onclick = () => { this.game.audio.play("ui-click"); editor.undo(); };
+      $("editor-reset").onclick = () => { this.game.audio.play("ui-click"); editor.reset(); };
+      $("editor-delete").onclick = () => { this.game.audio.play("ui-click"); editor.remove(); };
+      $("editor-play").onclick = () => { this.game.audio.play("ui-click"); this.playEditor(); };
       if ($("editor-export"))
         $("editor-export").onclick = () => {
           this.game.audio.play("ui-click");
@@ -547,3 +546,4 @@
     }
   };
 })(Resonance);
+
