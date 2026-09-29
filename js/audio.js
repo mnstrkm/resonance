@@ -109,9 +109,9 @@
           if (node.isUI) continue;
           try { node.stop(); } catch {}
         }
-      this.stopMusic();
-    }
+      }
     suspend() {
+      this.stopMusic();
       this.stop();
       if (this.ctx?.state === "running") this.ctx.suspend().catch(() => {});
     }
@@ -290,5 +290,6 @@
     }
   };
 })(Resonance);
+
 
 

@@ -22,7 +22,8 @@
     "04": "Pfeil (Grün)\nFeuert ein Projektil auf das nächste ruhende Ziel in Reichweite.",
     "05": "Funke (Gold)\nSucht nach kurzer Zeit ein zufälliges ruhendes Ziel irgendwo in der Arena.",
     "06": "Aura (Orange)\nRegt nahe Orbs an und verstärkt deren Kraft und Reichweite. Kein eigener Stoß.",
-    "07": "Spiegel (Perlmutt)\nKopiert die Fähigkeit des auslösenden Orbs. Ohne Auslöser: nur Core-Energie."
+    "07": "Spiegel (Perlmutt)\nKopiert die Fähigkeit des auslösenden Orbs. Ohne Auslöser: nur Core-Energie.",
+    "08": "Tutorial beendet!\nDas Spielfeld gehört nun ganz dir. Lass die Energie fließen!"
   };
   R.UI = class {
     constructor(game) {
@@ -311,8 +312,10 @@
         "pause-card",
       );
       $("go-home").onclick = () => { this.game.audio.play("ui-click"); this.game.audio.restoreMusic?.(); this.home(); };
+      if ($("retry-level")) $("retry-level").onclick = () => { this.game.audio.play("ui-click"); again(true); };
       this.modal.querySelectorAll("[data-speed]").forEach((button) => {
         button.onclick = () => {
+            this.game.audio.play("ui-click");
           this.game.setSpeed(Number(button.dataset.speed));
           this.modal
             .querySelectorAll("[data-speed]")
@@ -358,9 +361,8 @@
         `${this.header("Einstellungen")}<div class="settings"><label class="check"><input id="fallback" type="checkbox" ${a.fallback ? "checked" : ""}> Synthetische Vorschauklänge</label><label class="check"><input id="motion" type="checkbox" ${R.Config.effects.reducedMotion ? "checked" : ""}> Weniger Partikel & Lichtbewegung</label></div><button id="back">Zurück</button>`,
       );
       $("close-panel").onclick = $("back").onclick = () => { this.game.audio.play("ui-click"); this.close(); };
-      $("fallback").onchange = (e) => (a.fallback = e.target.checked);
-      $("motion").onchange = (e) =>
-        (R.Config.effects.reducedMotion = e.target.checked);
+      $("fallback").onchange = (e) => { this.game.audio.play("ui-click"); a.fallback = e.target.checked; };
+      $("motion").onchange = (e) => { this.game.audio.play("ui-click"); R.Config.effects.reducedMotion = e.target.checked; };
     }
     help() {
       this.panel("help");
@@ -403,15 +405,17 @@
         starsHtml += `</div>`;
       }
 
+      let btnTertiary = "";
       let btnPrimary = custom || !won ? "Noch einmal versuchen" : "Neues Feld";
       let btnSecondary = custom ? "Zum Editor" : won ? "Diesen Aufbau wiederholen" : "Neues Feld";
       if (levelMode) {
         btnPrimary = won ? "Nächstes Level" : "Noch einmal versuchen";
         btnSecondary = "Levelauswahl";
+        if (won) btnTertiary = `<button id="retry-level">Wiederholen</button>`;
       }
 
       this.open(
-        `<div class="menu-heading"><span class="eyebrow">${won ? (levelMode ? "LEVEL GESCHAFFT" : "RESONANZ ERREICHT") : (levelMode ? "LEVEL FEHLGESCHLAGEN" : "DIE ENERGIE KLINGT AUS")}</span>${iconButton("go-home", "home", "Hauptmenü")}</div><h2>${won ? "Alles im Einklang." : "Ein anderer Impuls."}</h2><p class="intro">${won ? `${s.energy} Orbs — ${used} ${used === 1 ? "Impuls" : "Impulse"}` : `${s.energy} von ${s.required} Energie gesammelt.`}</p>${starsHtml}<button class="primary" id="next">${btnPrimary}</button><button id="secondary">${btnSecondary}</button>`,
+        `<div class="menu-heading"><span class="eyebrow">${won ? (levelMode ? "LEVEL GESCHAFFT" : "RESONANZ ERREICHT") : (levelMode ? "LEVEL FEHLGESCHLAGEN" : "DIE ENERGIE KLINGT AUS")}</span>${iconButton("go-home", "home", "Hauptmenü")}</div><h2>${won ? "Alles im Einklang." : "Ein anderer Impuls."}</h2><p class="intro">${won ? `${s.energy} Orbs — ${used} ${used === 1 ? "Impuls" : "Impulse"}` : `${s.energy} von ${s.required} Energie gesammelt.`}</p>${starsHtml}<button class="primary" id="next">${btnPrimary}</button>${btnTertiary ? `<div class="button-row" style="margin-top: 10px;">${btnTertiary}<button id="secondary">${btnSecondary}</button></div>` : `<button id="secondary">${btnSecondary}</button>`}`,
         "result-card",
       );
 
@@ -421,6 +425,7 @@
       };
       
       $("go-home").onclick = () => { this.game.audio.play("ui-click"); this.home(); };
+      if ($("retry-level")) $("retry-level").onclick = () => { this.game.audio.play("ui-click"); again(true); };
       
       $("next").onclick = () => { 
         this.game.audio.play("ui-click"); 
@@ -598,4 +603,11 @@
     }
   };
 })(Resonance);
+
+
+
+
+
+
+
 
