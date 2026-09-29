@@ -57,6 +57,10 @@
             id="arena"
             aria-label="Ziehe einen farbigen Orb innerhalb seines Bewegungsradius und lass ihn los. Maus oder Touch erforderlich."
           ></canvas>
+          <div id="tutorial-overlay" class="tutorial-overlay" hidden>
+            <p id="tutorial-text"></p>
+            <p class="tutorial-hint">Tippen &rarr;</p>
+          </div>
         </div>
         <div id="editor-controls" hidden>
           <div
@@ -97,10 +101,18 @@
         <button id="start" class="primary">
           Spiel starten <span aria-hidden="true">↗</span>
         </button>
-        <button id="open-editor" class="text-button">Eigenes Feld</button>
+        <div id="mode-selection" class="mode-selection">
+          <button id="mode-level" class="primary">Level</button>
+          <button id="mode-random" class="secondary">Zufall</button>
+          <button id="mode-editor" class="secondary">Eigenes Feld</button>
+          <button id="mode-back" class="text-button">Zurück</button>
+        </div>
         <p class="welcome-hint">Ziehen. Loslassen. Entfalten lassen.</p>
         <p class="version" data-version></p>
       </div>
+    </section>
+    <section id="levels-screen" class="overlay levels-screen" hidden>
+      <div id="levels-content" class="modal-card levels-card"></div>
     </section>
     <div
       id="modal"
@@ -120,6 +132,7 @@
     <script src="js/orb-types.js?v=0.3.1"></script>
     <script src="js/generator.js?v=0.3.0"></script>
     <script src="js/level-data.js?v=0.3.0"></script>
+    <script src="js/level-loader.js?v=0.3.1"></script>
     <script src="js/state.js?v=0.3.1"></script>
     <script src="js/physics.js?v=0.3.0"></script>
     <script src="js/chain.js?v=0.3.1"></script>

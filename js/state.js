@@ -20,6 +20,20 @@
     create: () => R.LevelData.empty(),
     requiredEnergy: (n) => n,
   };
+  R.Modes.level = {
+    ...R.Modes.resonance,
+    name: "Level",
+    create: (seed, snapshot) => snapshot,
+    requiredEnergy: (n) => n, // Alle Orbs müssen aktiviert werden
+  };
+  
+  R.Stars = function(state) {
+    if (state.energy < state.required) return 0;
+    const used = state.initialImpulses - state.impulses;
+    if (used <= 1) return 3;
+    if (used === 2) return 2;
+    return 1;
+  };
   R.createState = function (seed, mode = "resonance", snapshot = null) {
     const layout = snapshot || R.Modes[mode].create(seed);
     return {

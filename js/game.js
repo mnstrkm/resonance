@@ -115,6 +115,14 @@
           if (outcome === "won") {
             s.phase = "complete";
             s.completeTime = 0;
+            if (s.mode === "level" && s.modeData.levelId) {
+              const stars = R.Stars(s);
+              try {
+                const ls = JSON.parse(localStorage.getItem("resonance.stars.v1") || "{}");
+                ls[s.modeData.levelId] = Math.max(ls[s.modeData.levelId] || 0, stars);
+                localStorage.setItem("resonance.stars.v1", JSON.stringify(ls));
+              } catch (_) {}
+            }
             this.ui.hint("Der Core findet seine Resonanz.");
             this.event("complete", {
               x: R.Config.arena.width / 2,

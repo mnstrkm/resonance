@@ -91,7 +91,7 @@
     snapshot() {
       return copy(this.layout);
     }
-    download() {
+    download(filename) {
       const payload = R.LevelData.export(this.layout);
       const url = URL.createObjectURL(
         new Blob([JSON.stringify(payload, null, 2)], {
@@ -100,7 +100,7 @@
       );
       const a = document.createElement("a");
       a.href = url;
-      a.download = "resonanz-level-" + this.layout.seed.toString(36) + ".json";
+      a.download = (filename || "resonanz-level-" + this.layout.seed.toString(36)) + ".json";
       document.body.append(a);
       a.click();
       a.remove();
