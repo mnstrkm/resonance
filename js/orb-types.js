@@ -39,7 +39,8 @@
     orange: {
       name: "Aura",
       color: "#f5a66c",
-      description: "Kleiner Radius: regt Nachbarn an und verstärkt ihre Kraft.",
+      description:
+        "Regt nahe Orbs an und verstärkt ihre Kraft und Reichweite.",
       symbol: "aura",
       ability: "orange",
     },
