@@ -12,7 +12,7 @@
     edit: '<path d="m4 16 12-12 4 4L8 20H4Zm10-10 4 4"/>',
       circle: '<circle cx="12" cy="12" r="10" stroke-dasharray="4 4"/>',
       line: '<line x1="4" y1="20" x2="20" y2="4" stroke-dasharray="4 4"/>',
-      'x-circle': '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>',
+      'x-circle': '<circle cx="12" cy="12" r="10" stroke-dasharray="4 4"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>',
   };
   const icon = (name) =>
     `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name]}</svg>`;
@@ -628,6 +628,7 @@
     }
   };
 })(Resonance);
+
 
 
 

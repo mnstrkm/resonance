@@ -704,9 +704,7 @@ input[type="range"] {
   position: relative;
   margin-top: 8px;
 }
-.editor-toolbar {
-  display: flex;
-  gap: 5px;
+.editor-toolbar { display: flex; flex-wrap: wrap; gap: 5px;
   justify-content: center;
   align-items: center;
 }
@@ -900,4 +898,5 @@ input[type="range"] {
 .levels-card {
   max-width: 460px;
 }
+
 

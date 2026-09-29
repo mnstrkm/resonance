@@ -108,7 +108,7 @@
     }
     addGuide(type) {
       if (!this.guides) this.guides = [];
-      if (type === "line") this.guides.push({ id: 'g' + Date.now(), type: 'line', x: 195, y: 310, angle: 0 });
+      if (type === "line") this.guides.push({ id: 'g' + Date.now(), type: 'line', x: 195, y: 310, angle: 0, length: 150 });
       if (type === "circle") this.guides.push({ id: 'g' + Date.now(), type: 'circle', x: 195, y: 310, r: 100 });
       this.refresh();
     }
@@ -353,3 +353,7 @@
     }
   };
 })(Resonance);
+
+
+
+
