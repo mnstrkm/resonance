@@ -98,7 +98,9 @@
     enterEditor() {
       this.game.editor.cancel();
       if (this.nav.route.screen === "game" && this.game.mode === "editor") {
-        this.nav.toDepth(1);
+        const d = this.nav.entries.findIndex(e => e && e.screen === "editor");
+        if (d >= 0) this.nav.toDepth(d);
+        else this.nav.go({ screen: "editor" });
       } else this.nav.go({ screen: "editor" });
     }
     playEditor() {
@@ -454,7 +456,8 @@
         `${this.header("Feld-Code")}<p class="intro">Bei gleicher Spielversion und Config entsteht derselbe Aufbau.</p><input id="seed-input" class="seed-input" maxlength="7" value="${this.game.state.seed.toString(36).toUpperCase()}" aria-label="Feld-Code"><p id="seed-error" class="muted"></p><button class="primary" id="load-seed">Feld laden</button><button id="close-seed">Abbrechen</button>`,
       );
       $("close-panel").onclick = $("close-seed").onclick = () => { this.game.audio.play("ui-click"); this.close(); };
-      $("load-seed").onclick = () => { this.game.audio.play("ui-click");
+      $("load-seed").onclick = () => { 
+        this.game.audio.play("ui-click");
         const value = $("seed-input").value.trim(),
           seed = parseInt(value, 36);
         if (
@@ -467,7 +470,9 @@
           return;
         }
         this.game.newRound(seed);
-        this.nav.toDepth(1);
+        const d = this.nav.entries.findIndex(e => e && e.screen === "game" && !e.panel);
+        if (d >= 0) this.nav.toDepth(d);
+        else this.nav.go({ screen: "game" }, true);
       };
     }
     showExport() {

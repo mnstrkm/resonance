@@ -106,11 +106,9 @@
     }
     stop() {
       for (const node of this.nodes) {
-        try {
-          node.stop();
-        } catch {}
-      }
-      this.nodes.clear();
+          if (node.isUI) continue;
+          try { node.stop(); } catch {}
+        }
       this.stopMusic();
     }
     suspend() {
@@ -203,6 +201,7 @@
       if (this.buffers[key]) {
         const source = this.ctx.createBufferSource();
         source.buffer = this.buffers[key];
+          source.isUI = (key === "ui-click");
         if (key === "energy")
           source.playbackRate.value =
             2 ** ([0, 3, 5, 7, 10][(data.index || 0) % 5] / 12);
@@ -243,6 +242,7 @@
       const [f, d] = map[key] || [220, 0.2];
       const osc = this.ctx.createOscillator();
       osc.type = "sine";
+        osc.isUI = (key === "ui-click");
       osc.frequency.setValueAtTime(key === "blue" ? f * 0.65 : f, now);
       osc.frequency.exponentialRampToValueAtTime(
         key === "blue" ? f : key === "red" ? f * 0.65 : f * 0.99,
@@ -290,3 +290,5 @@
     }
   };
 })(Resonance);
+
+
