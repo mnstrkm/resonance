@@ -4,7 +4,7 @@
   "gameVersion": "0.3.1",
   "name": "Level 27",
   "arena": { "width": 390, "height": 620, "padding": 24 },
-  "layout": { "seed": 4227, "count": 6, "orbs": [{"id": 0, "type": "violet", "x": 195, "y": 500}, {"id": 1, "type": "green", "x": 100, "y": 400}, {"id": 2, "type": "green", "x": 290, "y": 400}, {"id": 3, "type": "violet", "x": 195, "y": 300}, {"id": 4, "type": "red", "x": 100, "y": 200}, {"id": 5, "type": "red", "x": 290, "y": 200}] },
+  "layout": { "seed": 5027, "count": 9, "orbs": [{"id": 0, "type": "red", "x": 195, "y": 310}, {"id": 1, "type": "red", "x": 293, "y": 408}, {"id": 2, "type": "blue", "x": 195, "y": 454}, {"id": 3, "type": "violet", "x": 90, "y": 415}, {"id": 4, "type": "green", "x": 41, "y": 310}, {"id": 5, "type": "gold", "x": 83, "y": 198}, {"id": 6, "type": "orange", "x": 195, "y": 146}, {"id": 7, "type": "pearl", "x": 315, "y": 190}, {"id": 8, "type": "red", "x": 353, "y": 310}] },
   "rules": { "impulses": 3, "target": "all" },
   "balance": {
     "gameplay": { "minOrbs": 5, "maxOrbs": 20, "impulses": 3, "requiredRatio": 1, "chargeTime": 0.5, "orbRadius": 13, "moveRadius": 64, "minDrag": 9, "hitRadius": 25, "coreEnergy": 1 },

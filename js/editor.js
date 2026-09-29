@@ -157,6 +157,11 @@
       e.preventDefault();
       const canvas = this.game.input.canvas;
       canvas.setPointerCapture(e.pointerId);
+      if (this.drag) {
+        this.updateDrag(e);
+        this.game.ui.updateEditor();
+        return;
+      }
       this.selected = o?.id ?? null;
       this.drag = {
         pointer: e.pointerId,
@@ -285,25 +290,28 @@
       const ctx = renderer.ctx;
       if (this.guides) {
         ctx.save();
-        ctx.strokeStyle = "rgba(255,255,255,0.4)";
-        ctx.setLineDash([5, 5]);
+        ctx.strokeStyle = "rgba(255,255,255,0.6)";
+        ctx.setLineDash([6, 6]);
         for (const g of this.guides) {
           ctx.beginPath();
           if (g.type === "circle") {
             ctx.arc(g.x, g.y, g.r, 0, Math.PI * 2);
-            ctx.rect(g.x - 3, g.y - 3, 6, 6);
-            ctx.rect(g.x + g.r - 3, g.y - 3, 6, 6);
+            ctx.stroke();
+            ctx.fillStyle = "#dcebdc";
+            ctx.setLineDash([]);
+            ctx.beginPath(); ctx.arc(g.x, g.y, 10, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(g.x + g.r, g.y, 10, 0, Math.PI * 2); ctx.fill();
           } else if (g.type === "line") {
-            const dx = Math.cos(g.angle) * 1000;
-            const dy = Math.sin(g.angle) * 1000;
+            const dx = Math.cos(g.angle) * 150;
+            const dy = Math.sin(g.angle) * 150;
             ctx.moveTo(g.x - dx, g.y - dy);
             ctx.lineTo(g.x + dx, g.y + dy);
-            ctx.rect(g.x - 3, g.y - 3, 6, 6);
-            const hx = g.x + Math.cos(g.angle) * 100;
-            const hy = g.y + Math.sin(g.angle) * 100;
-            ctx.rect(hx - 3, hy - 3, 6, 6);
+            ctx.stroke();
+            ctx.fillStyle = "#dcebdc";
+            ctx.setLineDash([]);
+            ctx.beginPath(); ctx.arc(g.x, g.y, 10, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(g.x + dx, g.y + dy, 10, 0, Math.PI * 2); ctx.fill();
           }
-          ctx.stroke();
         }
         ctx.restore();
       }

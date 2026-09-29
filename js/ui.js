@@ -10,8 +10,8 @@
     play: '<path d="m8 4 12 8-12 8Z"/>',
     download: '<path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/>',
     edit: '<path d="m4 16 12-12 4 4L8 20H4Zm10-10 4 4"/>',
-      circle: '<circle cx="12" cy="12" r="10"/>',
-      line: '<line x1="4" y1="20" x2="20" y2="4"/>',
+      circle: '<circle cx="12" cy="12" r="10" stroke-dasharray="4 4"/>',
+      line: '<line x1="4" y1="20" x2="20" y2="4" stroke-dasharray="4 4"/>',
       'x-circle': '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>',
   };
   const icon = (name) =>
@@ -319,7 +319,7 @@
         levelMode = this.game.mode === "level";
       this.game.audio.dimMusic?.();
       this.open(
-        `<div class="menu-heading"><h2>Pause</h2>${iconButton("go-home", "home", "Hauptmenü")}</div>
+        `<div class="menu-heading"><h2>${this.game.mode === `"level`" ? `"Level `" + Number(this.game.state.modeData?.levelId) + `" - Pause`" : `"Pause`"}</h2>${iconButton("go-home", "home", "Hauptmenü")}</div>
         <div class="speed-setting"><span id="speed-label">Geschwindigkeit</span><div class="speed-options" role="group" aria-labelledby="speed-label">${[0.5, 1, 2].map((speed) => `<button type="button" data-speed="${speed}" aria-pressed="${this.game.speed === speed}">${String(speed).replace(".", ",")}×</button>`).join("")}</div></div>
         <label class="volume-row">Musik <input id="vol-music" type="range" min="0" max="1" step="0.05" value="${this.game.audio.musicVolume !== undefined ? this.game.audio.musicVolume : 1}"></label>
         <label class="volume-row">Spielsounds <input id="vol-effects" type="range" min="0" max="1" step="0.05" value="${this.game.audio.effectsVolume !== undefined ? this.game.audio.effectsVolume : 1}"></label>
@@ -433,7 +433,7 @@
       }
 
       this.open(
-        `<div class="menu-heading"><span class="eyebrow">${won ? (levelMode ? "LEVEL GESCHAFFT" : "RESONANZ ERREICHT") : (levelMode ? "LEVEL FEHLGESCHLAGEN" : "DIE ENERGIE KLINGT AUS")}</span>${iconButton("go-home", "home", "Hauptmenü")}</div><h2>${won ? "Alles im Einklang." : "Ein anderer Impuls."}</h2><p class="intro">${won ? `${s.energy} Orbs — ${used} ${used === 1 ? "Impuls" : "Impulse"}` : `${s.energy} von ${s.required} Energie gesammelt.`}</p>${starsHtml}<button class="primary" id="next">${btnPrimary}</button>${btnTertiary ? `<div class="button-row" style="margin-top: 10px;">${btnTertiary}<button id="secondary">${btnSecondary}</button></div>` : `<button id="secondary">${btnSecondary}</button>`}`,
+        `<div class="menu-heading"><span class="eyebrow">${won ? (levelMode ? "LEVEL GESCHAFFT (" + Number(s.modeData?.levelId) + ")" : "RESONANZ ERREICHT") : (levelMode ? "LEVEL FEHLGESCHLAGEN (" + Number(s.modeData?.levelId) + ")" : "DIE ENERGIE KLINGT AUS")}</span>${iconButton("go-home", "home", "Hauptmenü")}</div><h2>${won ? "Alles im Einklang." : "Ein anderer Impuls."}</h2><p class="intro">${won ? `${s.energy} Orbs — ${used} ${used === 1 ? "Impuls" : "Impulse"}` : `${s.energy} von ${s.required} Energie gesammelt.`}</p>${starsHtml}<button class="primary" id="next">${btnPrimary}</button>${btnTertiary ? `<div class="button-row" style="margin-top: 10px;">${btnTertiary}<button id="secondary">${btnSecondary}</button></div>` : `<button id="secondary">${btnSecondary}</button>`}`,
         "result-card",
       );
 
@@ -588,7 +588,7 @@
           };
         });
       $("editor-undo").onclick = () => { this.game.audio.play("ui-click"); editor.undo(); };
-      $("editor-reset").onclick = () => { this.game.audio.play("ui-click"); editor.reset(); };
+      $("editor-reset").onclick = () => { this.game.audio.play("ui-click"); editor.reset(); editor.resetGuides(); };
         $("guide-line").onclick = () => { this.game.audio.play("ui-click"); editor.addGuide("line"); };
         $("guide-circle").onclick = () => { this.game.audio.play("ui-click"); editor.addGuide("circle"); };
         $("editor-reset-guides").onclick = () => { this.game.audio.play("ui-click"); editor.resetGuides(); };
@@ -628,6 +628,9 @@
     }
   };
 })(Resonance);
+
+
+
 
 
 

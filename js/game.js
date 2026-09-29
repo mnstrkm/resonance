@@ -130,13 +130,19 @@
               color: "#e9dcbf",
             });
           } else if (outcome === "lost") {
-            s.phase = "lost";
-            this.ui.result(false);
-            this.audio.play("fail");
+            s.phase = "lost_wait";
+            s.lostTime = 0;
           } else {
             s.phase = "ready";
             this.ui.defaultHint();
           }
+        }
+      } else if (s.phase === "lost_wait") {
+        s.lostTime += dt;
+        if (s.lostTime >= 0.8) {
+          s.phase = "lost";
+          this.ui.result(false);
+          this.audio.play("fail");
         }
       } else if (s.phase === "complete") {
         s.completeTime += dt;
