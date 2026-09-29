@@ -34,7 +34,7 @@
     if (used === 2) return 2;
     return 1;
   };
-  R.createState = function (seed, mode = "resonance", snapshot = null) {
+  R.createState = function (seed, mode = "resonance", snapshot = null, modeData = {}) {
     const layout = snapshot || R.Modes[mode].create(seed);
     return {
       seed: layout.seed,
@@ -65,7 +65,7 @@
       jobs: [],
       projectiles: [],
       rand: R.random(layout.seed ^ 0x9e3779b9),
-      modeData: {},
+      modeData: JSON.parse(JSON.stringify(modeData || {})),
     };
   };
 })(Resonance);

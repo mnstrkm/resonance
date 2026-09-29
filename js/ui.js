@@ -271,7 +271,7 @@
             const id = btn.dataset.level;
             const data = R.LevelLoader.get(id);
             this.game.mode = "level";
-            this.game.newRound(data.layout.seed, data.layout);
+            this.game.newRound(data.layout.seed, data.layout, { levelId: id });
             this.game.state.modeData = { levelId: id };
             this.nav.go({ screen: "game" });
           };
@@ -318,8 +318,10 @@
         custom = this.game.mode === "editor",
         levelMode = this.game.mode === "level";
       this.game.audio.dimMusic?.();
+      const pauseLvl = Number(this.game.state.modeData?.levelId);
+      const pauseTitle = levelMode && !isNaN(pauseLvl) && pauseLvl > 0 ? `Level ${pauseLvl} - Pause` : "Pause";
       this.open(
-        `<div class="menu-heading"><h2>${this.game.mode === "level" ? "Level " + Number(this.game.state.modeData?.levelId) + " - Pause" : "Pause"}</h2>${iconButton("go-home", "home", "Hauptmenü")}</div>
+        `<div class="menu-heading"><h2>${pauseTitle}</h2>${iconButton("go-home", "home", "Hauptmenü")}</div>
         <div class="speed-setting"><span id="speed-label">Geschwindigkeit</span><div class="speed-options" role="group" aria-labelledby="speed-label">${[0.5, 1, 2].map((speed) => `<button type="button" data-speed="${speed}" aria-pressed="${this.game.speed === speed}">${String(speed).replace(".", ",")}×</button>`).join("")}</div></div>
         <label class="volume-row">Musik <input id="vol-music" type="range" min="0" max="1" step="0.05" value="${this.game.audio.musicVolume !== undefined ? this.game.audio.musicVolume : 1}"></label>
         <label class="volume-row">Spielsounds <input id="vol-effects" type="range" min="0" max="1" step="0.05" value="${this.game.audio.effectsVolume !== undefined ? this.game.audio.effectsVolume : 1}"></label>
@@ -432,8 +434,12 @@
         if (won) btnTertiary = `<button id="retry-level">Wiederholen</button>`;
       }
 
+      const lvlNum = Number(s.modeData?.levelId);
+      const lvlPrefix = levelMode && !isNaN(lvlNum) && lvlNum > 0 ? `LEVEL ${lvlNum} ` : "LEVEL ";
+      const eyebrowText = won ? (levelMode ? `${lvlPrefix}GESCHAFFT` : "RESONANZ ERREICHT") : (levelMode ? `${lvlPrefix}FEHLGESCHLAGEN` : "DIE ENERGIE KLINGT AUS");
+
       this.open(
-        `<div class="menu-heading"><span class="eyebrow">${won ? (levelMode ? "LEVEL GESCHAFFT (" + Number(s.modeData?.levelId) + ")" : "RESONANZ ERREICHT") : (levelMode ? "LEVEL FEHLGESCHLAGEN (" + Number(s.modeData?.levelId) + ")" : "DIE ENERGIE KLINGT AUS")}</span>${iconButton("go-home", "home", "Hauptmenü")}</div><h2>${won ? "Alles im Einklang." : "Ein anderer Impuls."}</h2><p class="intro">${won ? `${s.energy} Orbs — ${used} ${used === 1 ? "Impuls" : "Impulse"}` : `${s.energy} von ${s.required} Energie gesammelt.`}</p>${starsHtml}<button class="primary" id="next">${btnPrimary}</button>${btnTertiary ? `<div class="button-row" style="margin-top: 10px;">${btnTertiary}<button id="secondary">${btnSecondary}</button></div>` : `<button id="secondary">${btnSecondary}</button>`}`,
+        `<div class="menu-heading"><span class="eyebrow">${eyebrowText}</span>${iconButton("go-home", "home", "Hauptmenü")}</div><h2>${won ? "Alles im Einklang." : "Ein anderer Impuls."}</h2><p class="intro">${won ? `${s.energy} Orbs — ${used} ${used === 1 ? "Impuls" : "Impulse"}` : `${s.energy} von ${s.required} Energie gesammelt.`}</p>${starsHtml}<button class="primary" id="next">${btnPrimary}</button>${btnTertiary ? `<div class="button-row" style="margin-top: 10px;">${btnTertiary}<button id="secondary">${btnSecondary}</button></div>` : `<button id="secondary">${btnSecondary}</button>`}`,
         "result-card",
       );
 
@@ -451,7 +457,7 @@
           const nextId = String(Number(s.modeData.levelId) + 1).padStart(2, "0");
           const nextData = R.LevelLoader.get(nextId);
           if (nextData) {
-            this.game.newRound(nextData.layout.seed, nextData.layout);
+            this.game.newRound(nextData.layout.seed, nextData.layout, { levelId: nextId });
             this.game.state.modeData = { levelId: nextId };
             this.nav.go({ screen: "game" }, true);
           } else {
