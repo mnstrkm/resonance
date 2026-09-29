@@ -110,7 +110,7 @@ async function setup(search = "") {
 (async () => {
   const t = await setup(),
     { w, g, R, click, back, pointer, settle } = t;
-  assert.equal(R.version, "0.3.0");
+  assert.equal(R.version, "0.3.1");
   assert(g.paused);
   assert.equal(g.ui.nav.depth, 0);
   await click("start");
@@ -122,7 +122,7 @@ async function setup(search = "") {
   const depth = g.ui.nav.depth;
   await click("guide");
   assert.equal(g.ui.nav.depth, depth + 1);
-  assert.equal(w.document.activeElement.id, w.document.body);
+  assert.equal(w.document.activeElement, w.document.body);
   assert.equal(w.document.getElementById("modal-content").scrollTop, 0);
   assert.equal(w.document.querySelectorAll(".legend-row").length, 7);
   await back();

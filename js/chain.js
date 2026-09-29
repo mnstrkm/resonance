@@ -8,12 +8,13 @@
     ability(o) {
       return o.type === "pearl" ? o.copied : o.type;
     }
-    activate(o, source = null, boost = 1) {
+    activate(o, source = null, boost = 1, rangeBoost = 1) {
       if (o.state !== "idle") return false;
       o.state = "charging";
       o.timer = R.Config.gameplay.chargeTime;
       o.reserved = false;
       o.boost = boost;
+      o.rangeBoost = rangeBoost;
       if (o.type === "pearl") o.copied = source;
       this.emit("charge", {
         x: o.x,
@@ -23,7 +24,7 @@
       });
       return true;
     }
-    radial(o, type, radius, force = 0, boost = 1) {
+    radial(o, type, radius, force = 0, boost = 1, rangeBoost = 1) {
       for (const target of this.s.orbs) {
         if (target === o || distance(o, target) > radius) continue;
         if (force)
@@ -33,7 +34,7 @@
             target.y - o.y,
             force * (0.45 + 0.55 * (1 - distance(o, target) / radius)),
           );
-        this.activate(target, type, boost);
+        this.activate(target, type, boost, rangeBoost);
       }
     }
     emitAbility(o, type, radius) {
@@ -84,7 +85,12 @@
         boost: o.boost,
       });
       if (type === "green")
-        R.Physics.kick(o, o.x - target.x, o.y - target.y, c.green.recoil);
+        R.Physics.kick(
+          o,
+          o.x - target.x,
+          o.y - target.y,
+          c.green.recoil * o.boost,
+        );
     }
     step(dt) {
       const s = this.s;
@@ -153,17 +159,20 @@
   };
   R.Abilities = {
     red(chain, o, c) {
-      chain.emitAbility(o, "red", c.radius);
-      chain.radial(o, "red", c.radius, c.force * o.boost);
+      const radius = c.radius * o.rangeBoost;
+      chain.emitAbility(o, "red", radius);
+      chain.radial(o, "red", radius, c.force * o.boost);
     },
     blue(chain, o, c) {
-      chain.emitAbility(o, "blue", c.radius);
-      chain.radial(o, "blue", c.radius, -c.force * o.boost);
+      const radius = c.radius * o.rangeBoost;
+      chain.emitAbility(o, "blue", radius);
+      chain.radial(o, "blue", radius, -c.force * o.boost);
     },
     violet(chain, o, c) {
-      chain.emitAbility(o, "violet", c.radius);
+      const radius = c.radius * o.rangeBoost;
+      chain.emitAbility(o, "violet", radius);
       for (const t of chain.s.orbs)
-        if (t !== o && distance(o, t) <= c.radius)
+        if (t !== o && distance(o, t) <= radius)
           R.Physics.kick(t, t.x - o.x, t.y - o.y, -c.force * o.boost);
       chain.s.jobs.push({
         left: c.pullTime,
@@ -173,21 +182,22 @@
             y: o.y,
             type: "violet",
             color: R.OrbTypes.violet.color,
-            radius: c.radius,
+            radius,
           });
-          chain.radial(o, "violet", c.radius, c.burstForce * o.boost);
+          chain.radial(o, "violet", radius, c.burstForce * o.boost);
         },
       });
     },
     green(chain, o, c) {
-      chain.emitAbility(o, "green", c.radius);
+      const radius = c.radius * o.rangeBoost;
+      chain.emitAbility(o, "green", radius);
       const targets = chain.s.orbs
         .filter(
           (t) =>
             t !== o &&
             t.state === "idle" &&
             !t.reserved &&
-            distance(o, t) <= c.radius,
+            distance(o, t) <= radius,
         )
         .sort((a, b) => distance(o, a) - distance(o, b) || a.id - b.id);
       chain.projectile(o, targets[0], "green");
@@ -205,8 +215,11 @@
         );
     },
     orange(chain, o, c) {
-      chain.emitAbility(o, "orange", c.radius);
-      chain.radial(o, "orange", c.radius, 0, c.multiplier);
+      // A boosted orange reaches farther. A pearl copying orange keeps its
+      // original range, so the clone's ability is unchanged.
+      const radius = c.radius * (o.type === "orange" ? o.rangeBoost : 1);
+      chain.emitAbility(o, "orange", radius);
+      chain.radial(o, "orange", radius, 0, c.multiplier, c.rangeMultiplier);
     },
   };
 })(Resonance);

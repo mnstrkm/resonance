@@ -3,11 +3,11 @@ window.Resonance = window.Resonance || {};
 Resonance.Config = {
   arena: { width: 390, height: 620, padding: 24 },
   gameplay: {
-    minOrbs: 10,
-    maxOrbs: 15,
+    minOrbs: 5,
+    maxOrbs: 20,
     impulses: 3,
     requiredRatio: 1,
-    chargeTime: 0.45,
+    chargeTime: 0.5,
     orbRadius: 13,
     moveRadius: 64,
     minDrag: 9,
@@ -36,7 +36,7 @@ Resonance.Config = {
     reducedMotion: false,
   },
   audio: {
-    master: 0.6,
+    master: 1,
     effects: 0.7,
     core: 0.65,
     collision: 0.22,
@@ -49,6 +49,6 @@ Resonance.Config = {
     violet: { radius: 100, force: 100, burstForce: 145, pullTime: 0.34 },
     green: { radius: 175, force: 70, recoil: 34, speed: 420 },
     gold: { searchTime: 0.34, travelTime: 0.5 },
-    orange: { radius: 70, multiplier: 1.80 },
+    orange: { radius: 70, multiplier: 1.65, rangeMultiplier: 1.15 },
   },
 };

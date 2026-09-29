@@ -34,6 +34,7 @@
         state: "idle",
         timer: 0,
         boost: 1,
+        rangeBoost: 1,
         copied: null,
         reserved: false,
         collisionAt: -10,
