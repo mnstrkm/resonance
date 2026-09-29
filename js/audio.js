@@ -46,6 +46,11 @@
         if (mv !== null) this.musicVolume = parseFloat(mv);
       } catch (_) {}
     }
+    getMusicMax() {
+      const cfg = R.Config?.audio;
+      const val = cfg?.musicMax ?? cfg?.music_max;
+      return typeof val === "number" ? val : 0.43;
+    }
     async start() {
       if (!this.ctx) {
         const C = window.AudioContext || window.webkitAudioContext;
@@ -67,7 +72,7 @@
         this.effectsGain = this.ctx.createGain();
         this.musicGain = this.ctx.createGain();
         this.effectsGain.gain.value = this.effectsVolume;
-        this.musicGain.gain.value = this.musicVolume * (R.Config.audio.musicMax || 1);
+        this.musicGain.gain.value = this.musicVolume * this.getMusicMax();
         const limiter = this.ctx.createDynamicsCompressor();
         limiter.threshold.value = -16;
         limiter.ratio.value = 5;
@@ -116,7 +121,7 @@
     setMusicVolume(value) {
         const wasOff = this.musicVolume === 0;
         this.musicVolume = value;
-        if (this.musicGain) this.musicGain.gain.value = this.muted ? 0 : value * (R.Config.audio.musicMax || 1);
+        if (this.musicGain) this.musicGain.gain.value = this.muted ? 0 : value * this.getMusicMax();
         try {
           localStorage.setItem("resonance.musicVolume", value);
         } catch (_) {}
@@ -129,7 +134,7 @@
     mute(value) {
       this.muted = value;
       if (this.effectsGain) this.effectsGain.gain.value = value ? 0 : this.effectsVolume;
-      if (this.musicGain) this.musicGain.gain.value = value ? 0 : this.musicVolume * (R.Config.audio.musicMax || 1);
+      if (this.musicGain) this.musicGain.gain.value = value ? 0 : this.musicVolume * this.getMusicMax();
     }
     stop() {
       for (const node of this.nodes) {
@@ -185,7 +190,7 @@
     }
     dimMusic() {
       if (this.musicGain && this.ctx) {
-        const target = (this.muted ? 0 : this.musicVolume * (R.Config.audio.musicMax || 1)) * 0.3;
+        const target = (this.muted ? 0 : this.musicVolume * this.getMusicMax()) * 0.3;
         try {
           this.musicGain.gain.cancelScheduledValues(this.ctx.currentTime);
           this.musicGain.gain.setValueAtTime(this.musicGain.gain.value, this.ctx.currentTime);
@@ -197,7 +202,7 @@
     }
     restoreMusic() {
       if (this.musicGain && this.ctx) {
-        const target = this.muted ? 0 : this.musicVolume * (R.Config.audio.musicMax || 1);
+        const target = this.muted ? 0 : this.musicVolume * this.getMusicMax();
         try {
           this.musicGain.gain.cancelScheduledValues(this.ctx.currentTime);
           this.musicGain.gain.setValueAtTime(this.musicGain.gain.value, this.ctx.currentTime);
