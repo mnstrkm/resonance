@@ -37,7 +37,7 @@ Resonance.Config = {
   },
   audio: {
     master: 1,
-    musicMax: 0.43,
+    musicMax: 0.35,
     effects: 0.9,
     core: 0.75,
     collision: 0.32,
