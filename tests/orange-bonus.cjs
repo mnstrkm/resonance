@@ -12,6 +12,8 @@ for (const file of ["config", "orb-types", "generator", "level-data", "state", "
 }
 const R = context.Resonance;
 const charge = R.Config.gameplay.chargeTime;
+const orangeMultiplier = R.Config.abilities.orange.multiplier;
+const orangeRange = R.Config.abilities.orange.rangeMultiplier;
 
 function scenario(type, targetDistance) {
   const layout = {
@@ -28,50 +30,50 @@ function scenario(type, targetDistance) {
   const chain = new R.Chain(s, (name, data) => events.push({ name, ...data }));
   chain.activate(s.orbs[0]);
   chain.step(charge);
-  assert.equal(s.orbs[1].boost, 1.8);
-  assert.equal(s.orbs[1].rangeBoost, 1.2);
+  assert.equal(s.orbs[1].boost, orangeMultiplier);
+  assert.equal(s.orbs[1].rangeBoost, orangeRange);
   return { s, chain, events };
 }
 
-const red = scenario("red", 110);
+const red = scenario("red", 105);
 red.chain.step(charge);
 assert.equal(red.s.orbs[2].state, "charging");
 assert(red.s.orbs[2].vx > R.Config.abilities.red.force * .5);
-assert(red.events.some((e) => e.name === "ability" && e.type === "red" && e.radius === 120));
+assert(red.events.some((e) => e.name === "ability" && e.type === "red" && e.radius === 100 * orangeRange));
 assert.equal(red.s.orbs[2].boost, 1);
 assert.equal(red.s.orbs[2].rangeBoost, 1); // No bonus passed on by red.
 
-const blue = scenario("blue", 110);
+const blue = scenario("blue", 105);
 blue.chain.step(charge);
 assert.equal(blue.s.orbs[2].state, "charging");
 assert(blue.s.orbs[2].vx < 0); // Stronger pull, not a separate faster timer.
 
-const violet = scenario("violet", 110);
+const violet = scenario("violet", 105);
 violet.chain.step(charge);
 assert(violet.s.orbs[2].vx < 0);
 violet.chain.step(R.Config.abilities.violet.pullTime);
 assert.equal(violet.s.orbs[2].state, "charging");
-assert(violet.events.some((e) => e.name === "burst" && e.radius === 120));
+assert(violet.events.some((e) => e.name === "burst" && e.radius === 100 * orangeRange));
 
-const green = scenario("green", 195); // Within 175 * 1.2, outside normal 175.
+const green = scenario("green", 190); // Within 175 * 1.15, outside normal 175.
 green.chain.step(charge);
-assert.equal(green.s.orbs[1].vx, -R.Config.abilities.green.recoil * 1.8);
+assert.equal(green.s.orbs[1].vx, -R.Config.abilities.green.recoil * orangeMultiplier);
 assert.equal(green.s.orbs[2].state, "charging");
-assert.equal(green.s.orbs[2].vx, R.Config.abilities.green.force * 1.8);
-assert(green.events.some((e) => e.name === "ability" && e.type === "green" && e.radius === 210));
+assert.equal(green.s.orbs[2].vx, R.Config.abilities.green.force * orangeMultiplier);
+assert(green.events.some((e) => e.name === "ability" && e.type === "green" && e.radius === 175 * orangeRange));
 
-const nextOrange = scenario("orange", 80);
+const nextOrange = scenario("orange", 75);
 nextOrange.chain.step(charge);
 assert.equal(nextOrange.s.orbs[2].state, "charging");
-assert(nextOrange.events.some((e) => e.name === "ability" && e.type === "orange" && e.radius === 84));
+assert(nextOrange.events.some((e) => e.name === "ability" && e.type === "orange" && e.radius === 70 * orangeRange));
 
-const gold = scenario("gold", 195);
+const gold = scenario("gold", 190);
 gold.chain.step(charge);
 assert.equal(gold.chain.s.projectiles[0].type, "gold");
 assert.equal(gold.chain.s.projectiles[0].target, gold.s.orbs[2]);
 assert(gold.events.some((e) => e.name === "ability" && e.type === "gold" && e.radius === 0));
 
-const pearl = scenario("pearl", 80);
+const pearl = scenario("pearl", 75);
 assert.equal(pearl.s.orbs[1].copied, "orange");
 pearl.chain.step(charge);
 assert(pearl.events.some((e) => e.name === "ability" && e.type === "orange" && e.radius === 70));
