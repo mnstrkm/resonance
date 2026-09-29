@@ -36,7 +36,7 @@ Resonance.Config = {
     reducedMotion: false,
   },
   audio: {
-    master: 0.6,
+    master: 1,
     effects: 0.7,
     core: 0.65,
     collision: 0.22,
