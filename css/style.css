@@ -813,7 +813,8 @@ input[type="range"] {
 .welcome.show-modes .intro,
 .welcome.show-modes .welcome-hint,
 .welcome.show-modes #start,
-.welcome.show-modes h1 {
+.welcome.show-modes h1,
+.welcome.show-modes .eyebrow {
   opacity: 0;
   pointer-events: none;
 }
@@ -821,7 +822,8 @@ input[type="range"] {
 .welcome .intro,
 .welcome .welcome-hint,
 .welcome #start,
-.welcome h1 {
+.welcome h1,
+.welcome .eyebrow {
   transition: opacity 0.4s ease;
 }
 .welcome-art {
@@ -829,6 +831,11 @@ input[type="range"] {
 }
 .welcome.show-modes .welcome-art {
   transform: scale(0.7) translateY(-30px);
+}
+@media (max-width: 480px) and (max-height: 800px) {
+  .welcome.show-modes .welcome-art {
+    transform: scale(0.5) translateY(-20px);
+  }
 }
 
 /* --- Tutorial Overlay --- */

@@ -37,8 +37,9 @@
       };
       $("mode-random").onclick = () => {
         this.game.audio.play("ui-click");
+        this.game.mode = "resonance";
         this.game.newRound();
-        this.nav.go({ screen: "game" }, true);
+        this.nav.go({ screen: "game" });
       };
       $("mode-editor").onclick = () => {
         this.game.audio.play("ui-click");
@@ -46,7 +47,7 @@
       };
       $("mode-back").onclick = () => {
         this.game.audio.play("ui-click");
-        $("welcome").classList.remove("show-modes");
+        this.nav.back();
       };
       $("pause").onclick = () => {
         this.game.audio.play("ui-click");
@@ -92,7 +93,7 @@
       this.game.audio.start().then(() => {
         this.game.audio.play("ui-click");
       });
-      $("welcome").classList.add("show-modes");
+      this.nav.go({ screen: "modes" });
     }
     enterEditor() {
       this.game.editor.cancel();
@@ -115,19 +116,22 @@
       this.game.input.cancel();
       document.activeElement?.blur?.();
       const home = route.screen === "home",
+        modes = route.screen === "modes",
         editing = route.screen === "editor",
         levels = route.screen === "levels";
       document.body.classList.toggle("editing", editing);
-      $("welcome").hidden = !home;
-      if (home) $("welcome").classList.remove("show-modes");
-      $("app").inert = home || levels || !!route.panel;
-      $("welcome").inert = !home;
+      $("welcome").hidden = !(home || modes);
+      $("app").inert = home || modes || levels || !!route.panel;
+      $("welcome").inert = !(home || modes);
       if ($("levels-screen")) $("levels-screen").hidden = !levels;
       $("editor-controls").hidden = !editing;
       this.modal.hidden = !route.panel;
       $("orb-palette").hidden = true;
       $("palette-toggle")?.setAttribute("aria-expanded", "false");
-      this.game.setPaused(home || levels || editing || !!route.panel);
+      this.game.setPaused(home || modes || levels || editing || !!route.panel);
+      
+      if (home) $("welcome").classList.remove("show-modes");
+      if (modes) $("welcome").classList.add("show-modes");
       if (route.panel) {
         if (route.panel === "pause") this.showPause();
         else if (route.panel === "help") this.showHelp();

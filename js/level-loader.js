@@ -21,12 +21,14 @@
                 this.cache[id] = { valid: false };
                 return;
               }
-              const err = R.LevelData.validate(data.layout);
-              if (err) {
-                console.warn(`Level ${id} invalid:`, err);
+              const cleanLayout = R.LevelData.validate(data.layout);
+              if (!cleanLayout) {
+                console.warn(`Level ${id} invalid`);
                 this.cache[id] = { valid: false };
                 return;
               }
+              // Sicherstellen, dass das Level die bereinigten Daten verwendet
+              data.layout = cleanLayout;
               this.cache[id] = { valid: true, data };
             })
             .catch(() => {
