@@ -3,8 +3,8 @@ window.Resonance = window.Resonance || {};
 Resonance.Config = {
   arena: { width: 390, height: 620, padding: 24 },
   gameplay: {
-    minOrbs: 10,
-    maxOrbs: 15,
+    minOrbs: 5,
+    maxOrbs: 20,
     impulses: 3,
     requiredRatio: 1,
     chargeTime: 0.5,
