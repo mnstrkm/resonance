@@ -139,18 +139,19 @@
             if (Math.hypot(g.x - p.x, g.y - p.y) < 20) {
               this.drag = { pointer: e.pointerId, kind: 'guide_move', g, offsetX: g.x - p.x, offsetY: g.y - p.y, valid: true }; break;
             }
-            if (Math.abs(Math.hypot(g.x - p.x, g.y - p.y) - g.r) < 20) {
+            if (Math.hypot((g.x + g.r) - p.x, g.y - p.y) < 20) {
               this.drag = { pointer: e.pointerId, kind: 'guide_resize', g, valid: true }; break;
             }
           } else if (g.type === "line") {
             if (Math.hypot(g.x - p.x, g.y - p.y) < 20) {
               this.drag = { pointer: e.pointerId, kind: 'guide_move', g, offsetX: g.x - p.x, offsetY: g.y - p.y, valid: true }; break;
             }
-            const dx = p.x - g.x, dy = p.y - g.y;
-            const dist = Math.abs(-Math.sin(g.angle)*dx + Math.cos(g.angle)*dy);
-            if (dist < 20 && Math.hypot(dx, dy) > 20) {
-              this.drag = { pointer: e.pointerId, kind: 'guide_rotate', g, valid: true }; break;
-            }
+            const len = g.length || 150;
+              const hx = g.x + Math.cos(g.angle) * len;
+              const hy = g.y + Math.sin(g.angle) * len;
+              if (Math.hypot(hx - p.x, hy - p.y) < 20) {
+                this.drag = { pointer: e.pointerId, kind: 'guide_rotate_resize', g, valid: true }; break;
+              }
           }
         }
       }
@@ -222,6 +223,7 @@
 
       if (this.guides && (d.kind === 'move' || d.kind === 'add')) {
         for (const g of this.guides) {
+          ctx.setLineDash([6, 6]);
           if (g.type === "circle") {
             const dist = Math.hypot(d.x - g.x, d.y - g.y);
             if (Math.abs(dist - g.r) < 20) {
@@ -293,6 +295,7 @@
         ctx.strokeStyle = "rgba(255,255,255,0.6)";
         ctx.setLineDash([6, 6]);
         for (const g of this.guides) {
+          ctx.setLineDash([6, 6]);
           ctx.beginPath();
           if (g.type === "circle") {
             ctx.arc(g.x, g.y, g.r, 0, Math.PI * 2);
@@ -302,8 +305,9 @@
             ctx.beginPath(); ctx.arc(g.x, g.y, 10, 0, Math.PI * 2); ctx.fill();
             ctx.beginPath(); ctx.arc(g.x + g.r, g.y, 10, 0, Math.PI * 2); ctx.fill();
           } else if (g.type === "line") {
-            const dx = Math.cos(g.angle) * 150;
-            const dy = Math.sin(g.angle) * 150;
+            const len = g.length || 150;
+              const dx = Math.cos(g.angle) * len;
+              const dy = Math.sin(g.angle) * len;
             ctx.moveTo(g.x - dx, g.y - dy);
             ctx.lineTo(g.x + dx, g.y + dy);
             ctx.stroke();
@@ -353,6 +357,18 @@
     }
   };
 })(Resonance);
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
