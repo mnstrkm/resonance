@@ -37,10 +37,14 @@
       this.musicSource = null;
       this.musicTracks = [];
       this.musicIndex = -1;
-      const ev = localStorage.getItem("resonance.effectsVolume");
-      this.effectsVolume = ev !== null ? parseFloat(ev) : 1;
-      const mv = localStorage.getItem("resonance.musicVolume");
-      this.musicVolume = mv !== null ? parseFloat(mv) : 1;
+      this.effectsVolume = 1;
+      this.musicVolume = 1;
+      try {
+        const ev = localStorage.getItem("resonance.effectsVolume");
+        if (ev !== null) this.effectsVolume = parseFloat(ev);
+        const mv = localStorage.getItem("resonance.musicVolume");
+        if (mv !== null) this.musicVolume = parseFloat(mv);
+      } catch (_) {}
     }
     async start() {
       if (!this.ctx) {
@@ -48,8 +52,16 @@
         if (!C) return;
         this.ctx = new C();
           document.addEventListener("visibilitychange", () => {
-            if (document.visibilityState === "visible" && this.ctx.state === "suspended") {
-              this.ctx.resume().catch(() => {});
+            if (document.visibilityState === "visible") {
+              if (this.ctx && this.ctx.state === "suspended") {
+                this.ctx.resume().then(() => {
+                  if (!this.musicSource && this.musicTracks.length && !this.muted && this.musicVolume > 0) {
+                    this.startMusic();
+                  }
+                }).catch(() => {});
+              } else if (!this.musicSource && this.musicTracks.length && !this.muted && this.musicVolume > 0) {
+                this.startMusic();
+              }
             }
           });
         this.effectsGain = this.ctx.createGain();
@@ -74,6 +86,9 @@
         this.loadMusic();
       }
       if (this.ctx.state === "suspended") await this.ctx.resume();
+      if (!this.musicSource && this.musicTracks.length && !this.muted && this.musicVolume > 0) {
+        this.startMusic();
+      }
     }
     async load() {
       await Promise.all(
@@ -94,13 +109,17 @@
     setEffectsVolume(value) {
       this.effectsVolume = value;
       if (this.effectsGain) this.effectsGain.gain.value = this.muted ? 0 : value;
-      localStorage.setItem("resonance.effectsVolume", value);
+      try {
+        localStorage.setItem("resonance.effectsVolume", value);
+      } catch (_) {}
     }
     setMusicVolume(value) {
         const wasOff = this.musicVolume === 0;
         this.musicVolume = value;
         if (this.musicGain) this.musicGain.gain.value = this.muted ? 0 : value * (R.Config.audio.musicMax || 1);
-        localStorage.setItem("resonance.musicVolume", value);
+        try {
+          localStorage.setItem("resonance.musicVolume", value);
+        } catch (_) {}
         if (value === 0) this.stopMusic();
         else if (wasOff && !this.musicSource) this.startMusic();
       }
@@ -119,7 +138,6 @@
         }
       }
     suspend() {
-      this.stopMusic();
       this.stop();
       if (this.ctx?.state === "running") this.ctx.suspend().catch(() => {});
     }
@@ -167,18 +185,26 @@
     }
     dimMusic() {
       if (this.musicGain && this.ctx) {
-        this.musicGain.gain.linearRampToValueAtTime(
-          this.musicGain.gain.value * 0.3,
-          this.ctx.currentTime + 0.3
-        );
+        const target = (this.muted ? 0 : this.musicVolume * (R.Config.audio.musicMax || 1)) * 0.3;
+        try {
+          this.musicGain.gain.cancelScheduledValues(this.ctx.currentTime);
+          this.musicGain.gain.setValueAtTime(this.musicGain.gain.value, this.ctx.currentTime);
+          this.musicGain.gain.linearRampToValueAtTime(target, this.ctx.currentTime + 0.3);
+        } catch (_) {
+          this.musicGain.gain.value = target;
+        }
       }
     }
     restoreMusic() {
       if (this.musicGain && this.ctx) {
-        this.musicGain.gain.linearRampToValueAtTime(
-          this.muted ? 0 : this.musicVolume * (R.Config.audio.musicMax || 1),
-          this.ctx.currentTime + 0.3
-        );
+        const target = this.muted ? 0 : this.musicVolume * (R.Config.audio.musicMax || 1);
+        try {
+          this.musicGain.gain.cancelScheduledValues(this.ctx.currentTime);
+          this.musicGain.gain.setValueAtTime(this.musicGain.gain.value, this.ctx.currentTime);
+          this.musicGain.gain.linearRampToValueAtTime(target, this.ctx.currentTime + 0.3);
+        } catch (_) {
+          this.musicGain.gain.value = target;
+        }
       }
     }
     play(key, data = {}) {

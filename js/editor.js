@@ -130,6 +130,7 @@
     down(e) {
       if (e.button !== 0 || this.drag) return;
       const p = this.point(e);
+      const canvas = this.game.input.canvas;
       const o = this.layout.orbs
         .slice()
         .sort(
@@ -146,35 +147,34 @@
           if (g.type === "circle") {
             if (Math.hypot(g.x - p.x, g.y - p.y) < 20) {
               this.remember();
-              this.drag = { pointer: e.pointerId, kind: 'guide_move', g, offsetX: g.x - p.x, offsetY: g.y - p.y, valid: true }; break;
+              this.drag = { pointer: e.pointerId, element: canvas, kind: 'guide_move', g, offsetX: g.x - p.x, offsetY: g.y - p.y, valid: true }; break;
             }
             if (Math.hypot((g.x + g.r) - p.x, g.y - p.y) < 20) {
               this.remember();
-              this.drag = { pointer: e.pointerId, kind: 'guide_resize', g, valid: true }; break;
+              this.drag = { pointer: e.pointerId, element: canvas, kind: 'guide_resize', g, valid: true }; break;
             }
           } else if (g.type === "line") {
             if (Math.hypot(g.x - p.x, g.y - p.y) < 20) {
               this.remember();
-              this.drag = { pointer: e.pointerId, kind: 'guide_move', g, offsetX: g.x - p.x, offsetY: g.y - p.y, valid: true }; break;
+              this.drag = { pointer: e.pointerId, element: canvas, kind: 'guide_move', g, offsetX: g.x - p.x, offsetY: g.y - p.y, valid: true }; break;
             }
             const len = g.length || 150;
             const hxRight = g.x + Math.cos(g.angle) * len;
             const hyRight = g.y + Math.sin(g.angle) * len;
             if (Math.hypot(hxRight - p.x, hyRight - p.y) < 20) {
               this.remember();
-              this.drag = { pointer: e.pointerId, kind: 'guide_rotate', g, valid: true }; break;
+              this.drag = { pointer: e.pointerId, element: canvas, kind: 'guide_rotate', g, valid: true }; break;
             }
             const hxLeft = g.x - Math.cos(g.angle) * len;
             const hyLeft = g.y - Math.sin(g.angle) * len;
             if (Math.hypot(hxLeft - p.x, hyLeft - p.y) < 20) {
               this.remember();
-              this.drag = { pointer: e.pointerId, kind: 'guide_resize_line', g, valid: true }; break;
+              this.drag = { pointer: e.pointerId, element: canvas, kind: 'guide_resize_line', g, valid: true }; break;
             }
           }
         }
       }
       e.preventDefault();
-      const canvas = this.game.input.canvas;
       canvas.setPointerCapture(e.pointerId);
       if (this.drag) {
         this.updateDrag(e);
@@ -253,13 +253,17 @@
                break;
             }
           } else if (g.type === "line") {
+            const len = g.length || 150;
             const dx = d.x - g.x, dy = d.y - g.y;
-            const distLine = Math.abs(-Math.sin(g.angle)*dx + Math.cos(g.angle)*dy);
-            if (distLine < 20) {
-               const t = dx*Math.cos(g.angle) + dy*Math.sin(g.angle);
-               d.x = g.x + t*Math.cos(g.angle);
-               d.y = g.y + t*Math.sin(g.angle);
-               break;
+            const t = dx * Math.cos(g.angle) + dy * Math.sin(g.angle);
+            if (Math.abs(t) <= len + 5) {
+              const distLine = Math.abs(-Math.sin(g.angle) * dx + Math.cos(g.angle) * dy);
+              if (distLine < 20) {
+                const clampedT = Math.max(-len, Math.min(len, t));
+                d.x = g.x + clampedT * Math.cos(g.angle);
+                d.y = g.y + clampedT * Math.sin(g.angle);
+                break;
+              }
             }
           }
         }
@@ -306,7 +310,7 @@
     cancel() {
       const d = this.drag;
       this.drag = null;
-      if (d?.element.hasPointerCapture?.(d.pointer))
+      if (d?.element?.hasPointerCapture?.(d.pointer))
         d.element.releasePointerCapture(d.pointer);
     }
     draw(renderer) {

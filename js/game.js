@@ -45,7 +45,12 @@
       this.accumulator = 0;
       this.last = 0;
       if (value) this.audio.stop();
-      else this.audio.start().catch(() => {});
+      else {
+        this.audio.start().catch(() => {});
+        if (!this.audio.musicSource && this.audio.musicTracks.length && !this.audio.muted && this.audio.musicVolume > 0) {
+          this.audio.startMusic();
+        }
+      }
     }
     setSpeed(value) {
       if (![0.5, 1, 2].includes(value)) return;

@@ -159,6 +159,7 @@
         this.nav.go({ screen: "game", panel: "result" }, true);
         return;
       } 
+      if (!route.panel) this.game.audio.restoreMusic?.();
       this.update();
       if (editing) this.updateEditor();
       if (levels) this.renderLevels();
