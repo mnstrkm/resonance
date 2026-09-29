@@ -34,7 +34,7 @@
       $("start").onclick = () => this.begin();
       $("mode-level").onclick = () => {
         this.game.audio.play("ui-click");
-        this.nav.go({ screen: "levels" });
+        this.goToLevels();
       };
       $("mode-random").onclick = () => {
         this.game.audio.play("ui-click");
@@ -95,6 +95,11 @@
         this.game.audio.play("ui-click");
       });
       this.nav.go({ screen: "modes" });
+    }
+    goToLevels() {
+      const d = this.nav.entries.findIndex(e => e && e.screen === "levels");
+      if (d >= 0) this.nav.toDepth(d);
+      else this.nav.go({ screen: "levels" });
     }
     enterEditor() {
       this.game.editor.cancel();
@@ -341,7 +346,7 @@
           this.game.audio.play("ui-click");
           this.game.audio.restoreMusic?.();
           if (custom) this.enterEditor();
-          else if (levelMode) this.nav.go({ screen: "levels" });
+          else if (levelMode) this.goToLevels();
           else {
             this.game.newRound();
             this.close();
@@ -437,7 +442,7 @@
             this.game.state.modeData = { levelId: nextId };
             this.nav.go({ screen: "game" }, true);
           } else {
-            this.nav.go({ screen: "levels" });
+            this.goToLevels();
           }
         } else {
           again(custom || !won); 
@@ -447,7 +452,7 @@
       $("secondary").onclick = () => { 
         this.game.audio.play("ui-click"); 
         if (levelMode) {
-          this.nav.go({ screen: "levels" });
+          this.goToLevels();
         } else {
           (custom ? this.enterEditor() : again(won)); 
         }
@@ -603,6 +608,9 @@
     }
   };
 })(Resonance);
+
+
+
 
 
 
