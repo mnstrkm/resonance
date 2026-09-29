@@ -245,7 +245,6 @@
 
       if (this.guides && (d.kind === 'move' || d.kind === 'add')) {
         for (const g of this.guides) {
-          ctx.setLineDash([6, 6]);
           if (g.type === "circle") {
             const dist = Math.hypot(d.x - g.x, d.y - g.y);
             if (Math.abs(dist - g.r) < 20) {
@@ -323,9 +322,15 @@
             ctx.arc(g.x, g.y, g.r, 0, Math.PI * 2);
             ctx.stroke();
             ctx.fillStyle = "#dcebdc";
+            ctx.strokeStyle = "#dcebdc";
+            ctx.lineWidth = 2;
             ctx.setLineDash([]);
-            ctx.beginPath(); ctx.arc(g.x, g.y, 10, 0, Math.PI * 2); ctx.fill();
-            ctx.beginPath(); ctx.arc(g.x + g.r, g.y, 10, 0, Math.PI * 2); ctx.fill();
+            
+            // Center handle: Move (Solid circle)
+            ctx.beginPath(); ctx.arc(g.x, g.y, 7, 0, Math.PI * 2); ctx.fill();
+            
+            // Right handle: Resize (Square)
+            ctx.fillRect(g.x + g.r - 7, g.y - 7, 14, 14);
           } else if (g.type === "line") {
             const len = g.length || 150;
             const dx = Math.cos(g.angle) * len;
@@ -333,11 +338,21 @@
             ctx.moveTo(g.x - dx, g.y - dy);
             ctx.lineTo(g.x + dx, g.y + dy);
             ctx.stroke();
+            
             ctx.fillStyle = "#dcebdc";
+            ctx.strokeStyle = "#dcebdc";
+            ctx.lineWidth = 2;
             ctx.setLineDash([]);
-            ctx.beginPath(); ctx.arc(g.x, g.y, 10, 0, Math.PI * 2); ctx.fill();
-            ctx.beginPath(); ctx.arc(g.x + dx, g.y + dy, 10, 0, Math.PI * 2); ctx.fill();
-            ctx.beginPath(); ctx.arc(g.x - dx, g.y - dy, 10, 0, Math.PI * 2); ctx.fill();
+            
+            // Center handle: Move (Solid circle, slightly smaller)
+            ctx.beginPath(); ctx.arc(g.x, g.y, 7, 0, Math.PI * 2); ctx.fill();
+            
+            // Right handle: Rotate (Hollow circle with dot)
+            ctx.beginPath(); ctx.arc(g.x + dx, g.y + dy, 8, 0, Math.PI * 2); ctx.stroke();
+            ctx.beginPath(); ctx.arc(g.x + dx, g.y + dy, 3, 0, Math.PI * 2); ctx.fill();
+            
+            // Left handle: Resize (Square)
+            ctx.fillRect(g.x - dx - 7, g.y - dy - 7, 14, 14);
           }
         }
         ctx.restore();
