@@ -106,6 +106,16 @@
       a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
     }
+    addGuide(type) {
+      if (!this.guides) this.guides = [];
+      if (type === "line") this.guides.push({ id: 'g' + Date.now(), type: 'line', x: 195, y: 310, angle: 0 });
+      if (type === "circle") this.guides.push({ id: 'g' + Date.now(), type: 'circle', x: 195, y: 310, r: 100 });
+      this.refresh();
+    }
+    resetGuides() {
+      this.guides = [];
+      this.refresh();
+    }
     point(e) {
       return this.game.input.point(e);
     }
@@ -122,6 +132,28 @@
           (o) =>
             Math.hypot(o.x - p.x, o.y - p.y) <= R.Config.gameplay.hitRadius,
         );
+      if (!o && this.guides) {
+        for (let i = this.guides.length - 1; i >= 0; i--) {
+          const g = this.guides[i];
+          if (g.type === "circle") {
+            if (Math.hypot(g.x - p.x, g.y - p.y) < 20) {
+              this.drag = { pointer: e.pointerId, kind: 'guide_move', g, offsetX: g.x - p.x, offsetY: g.y - p.y, valid: true }; break;
+            }
+            if (Math.abs(Math.hypot(g.x - p.x, g.y - p.y) - g.r) < 20) {
+              this.drag = { pointer: e.pointerId, kind: 'guide_resize', g, valid: true }; break;
+            }
+          } else if (g.type === "line") {
+            if (Math.hypot(g.x - p.x, g.y - p.y) < 20) {
+              this.drag = { pointer: e.pointerId, kind: 'guide_move', g, offsetX: g.x - p.x, offsetY: g.y - p.y, valid: true }; break;
+            }
+            const dx = p.x - g.x, dy = p.y - g.y;
+            const dist = Math.abs(-Math.sin(g.angle)*dx + Math.cos(g.angle)*dy);
+            if (dist < 20 && Math.hypot(dx, dy) > 20) {
+              this.drag = { pointer: e.pointerId, kind: 'guide_rotate', g, valid: true }; break;
+            }
+          }
+        }
+      }
       e.preventDefault();
       const canvas = this.game.input.canvas;
       canvas.setPointerCapture(e.pointerId);
@@ -169,6 +201,42 @@
         d = this.drag;
       d.x = p.x + d.offsetX;
       d.y = p.y + d.offsetY;
+      
+      if (d.kind === 'guide_move') {
+        d.g.x = d.x; d.g.y = d.y;
+        this.game.ui.updateEditor(); return;
+      }
+      if (d.kind === 'guide_resize') {
+        d.g.r = Math.max(10, Math.hypot(p.x - d.g.x, p.y - d.g.y));
+        this.game.ui.updateEditor(); return;
+      }
+      if (d.kind === 'guide_rotate') {
+        d.g.angle = Math.atan2(p.y - d.g.y, p.x - d.g.x);
+        this.game.ui.updateEditor(); return;
+      }
+
+      if (this.guides && (d.kind === 'move' || d.kind === 'add')) {
+        for (const g of this.guides) {
+          if (g.type === "circle") {
+            const dist = Math.hypot(d.x - g.x, d.y - g.y);
+            if (Math.abs(dist - g.r) < 20) {
+               d.x = g.x + (d.x - g.x) / dist * g.r;
+               d.y = g.y + (d.y - g.y) / dist * g.r;
+               break;
+            }
+          } else if (g.type === "line") {
+            const dx = d.x - g.x, dy = d.y - g.y;
+            const distLine = Math.abs(-Math.sin(g.angle)*dx + Math.cos(g.angle)*dy);
+            if (distLine < 20) {
+               const t = dx*Math.cos(g.angle) + dy*Math.sin(g.angle);
+               d.x = g.x + t*Math.cos(g.angle);
+               d.y = g.y + t*Math.sin(g.angle);
+               break;
+            }
+          }
+        }
+      }
+
       const paletteBounds = d.palette
         ? d.element.parentElement.getBoundingClientRect()
         : null;
@@ -215,6 +283,30 @@
     }
     draw(renderer) {
       const ctx = renderer.ctx;
+      if (this.guides) {
+        ctx.save();
+        ctx.strokeStyle = "rgba(255,255,255,0.4)";
+        ctx.setLineDash([5, 5]);
+        for (const g of this.guides) {
+          ctx.beginPath();
+          if (g.type === "circle") {
+            ctx.arc(g.x, g.y, g.r, 0, Math.PI * 2);
+            ctx.rect(g.x - 3, g.y - 3, 6, 6);
+            ctx.rect(g.x + g.r - 3, g.y - 3, 6, 6);
+          } else if (g.type === "line") {
+            const dx = Math.cos(g.angle) * 1000;
+            const dy = Math.sin(g.angle) * 1000;
+            ctx.moveTo(g.x - dx, g.y - dy);
+            ctx.lineTo(g.x + dx, g.y + dy);
+            ctx.rect(g.x - 3, g.y - 3, 6, 6);
+            const hx = g.x + Math.cos(g.angle) * 100;
+            const hy = g.y + Math.sin(g.angle) * 100;
+            ctx.rect(hx - 3, hy - 3, 6, 6);
+          }
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
       if (this.selected !== null) {
         const o = this.layout.orbs.find((o) => o.id === this.selected);
         if (o) {

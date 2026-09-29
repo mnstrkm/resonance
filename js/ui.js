@@ -10,6 +10,9 @@
     play: '<path d="m8 4 12 8-12 8Z"/>',
     download: '<path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/>',
     edit: '<path d="m4 16 12-12 4 4L8 20H4Zm10-10 4 4"/>',
+      circle: '<circle cx="12" cy="12" r="10"/>',
+      line: '<line x1="4" y1="20" x2="20" y2="4"/>',
+      'x-circle': '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>',
   };
   const icon = (name) =>
     `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name]}</svg>`;
@@ -201,7 +204,17 @@
       const totalPages = Math.ceil(totalLevels / perPage);
       const start = (page - 1) * perPage + 1;
       const end = Math.min(page * perPage, totalLevels);
-      let html = `<div class="menu-heading"><h2>Level</h2>${iconButton("close-levels", "close", "Schließen")}</div>`;
+      let totalEarned = 0, totalMax = 0;
+        let allStars = {};
+        try { allStars = JSON.parse(localStorage.getItem("resonance.stars.v1")) || {}; } catch(e){}
+        for (let i = 1; i <= 50; i++) {
+          const dId = i.toString().padStart(2, "0");
+          if (R.LevelLoader.get(dId)) {
+            totalMax += 3;
+            totalEarned += allStars[dId] || 0;
+          }
+        }
+        let html = `<div class="menu-heading"><h2>Level <span style="font-size: 0.6em; color: var(--accent); margin-left: 10px; font-weight: normal;">&#9733; ${totalEarned} / ${totalMax}</span></h2>${iconButton("close-levels", "close", "Schließen")}</div>`;
       html += `<div class="levels-grid" style="display:grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 20px 0;">`;
       for (let i = start; i <= end; i++) {
         const id = i.toString().padStart(2, "0");
@@ -531,7 +544,10 @@
       $("editor-toolbar").innerHTML =
         iconButton("palette-toggle", "add", "Orbs auswählen") +
         iconButton("editor-undo", "undo", "Rückgängig") +
-        iconButton("editor-reset", "trash", "Zurücksetzen") +
+        iconButton("editor-reset", "trash", "Alle Orbs löschen") +
+          iconButton("guide-line", "line", "Hilfslinie hinzufügen") +
+          iconButton("guide-circle", "circle", "Hilfskreis hinzufügen") +
+          iconButton("editor-reset-guides", "x-circle", "Alle Hilfslinien löschen") +
         iconButton("editor-delete", "close", "Ausgewählten Orb entfernen") +
         (this.game.editor.creator
           ? iconButton("editor-export", "download", "Leveldatei speichern")
@@ -573,6 +589,9 @@
         });
       $("editor-undo").onclick = () => { this.game.audio.play("ui-click"); editor.undo(); };
       $("editor-reset").onclick = () => { this.game.audio.play("ui-click"); editor.reset(); };
+        $("guide-line").onclick = () => { this.game.audio.play("ui-click"); editor.addGuide("line"); };
+        $("guide-circle").onclick = () => { this.game.audio.play("ui-click"); editor.addGuide("circle"); };
+        $("editor-reset-guides").onclick = () => { this.game.audio.play("ui-click"); editor.resetGuides(); };
       $("editor-delete").onclick = () => { this.game.audio.play("ui-click"); editor.remove(); };
       $("editor-play").onclick = () => { this.game.audio.play("ui-click"); this.playEditor(); };
       if ($("editor-export"))
@@ -587,6 +606,7 @@
       $("editor-play").disabled = !e.layout.count;
       $("editor-undo").disabled = !e.history.length;
       $("editor-reset").disabled = !e.layout.count;
+        $("editor-reset-guides").hidden = !e.guides || !e.guides.length;
       $("editor-delete").hidden = e.selected === null;
       if ($("editor-export")) $("editor-export").disabled = !e.layout.count;
       $("orb-palette")
@@ -608,6 +628,12 @@
     }
   };
 })(Resonance);
+
+
+
+
+
+
 
 
 
