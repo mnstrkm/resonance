@@ -1,16 +1,16 @@
-# Asset-Herkunft
+# Asset-Herkunft und Lizenzen
 
-In Version 0.1.0 sind keine fremden Bild-, Schrift- oder Audioassets enthalten.
+## Enthaltene Assets
 
-- Darstellung, Partikel, CSS-Illustration und SVG-Icon: eigens für dieses Projekt erstellt.
-- Schrift: lokal vorhandene Systemschriften / Georgia, keine Schriftdatei verteilt.
-- Vorschau-Audio: zur Laufzeit erzeugte Synthese, keine verwendeten Soundaufnahmen.
-- Konzeptbilder aus der Planung: nicht Bestandteil des Spiels.
+- **Darstellung, Partikel, CSS-Illustration und SVG-Icon:** Eigens für dieses Projekt erstellt.
+- **Schrift:** Lokal vorhandene Systemschriften / Georgia; keine externen Schriftdateien gebündelt.
+- **Soundeffekte (`assets/sounds/`):** Zur Laufzeit erzeugte Web-Audio-Synthese als Standard/Fallback; optionale eigene Sounddateien können gemäß `assets/sounds/SOUNDS.md` hinterlegt werden.
+- **Hintergrundmusik (`assets/music/`):**
 
-Bei neuen Sounds hier ergänzen:
-
-| Datei               | Quelle / URL | Autor | Lizenz | Erforderliche Namensnennung |
-| ------------------- | ------------ | ----- | ------ | --------------------------- |
-| Beispiel (ersetzen) |              |       |        |                             |
+| Datei | Quelle / Herkunft | Autor / Komponist | Lizenz | Namensnennung / Anmerkung |
+| --- | --- | --- | --- | --- |
+| `Resonance - Main Theme.opus` | *Ausstehend* | *Ausstehend* | *Ausstehend* | In v0.4.0 hinzugefügt; Herkunftsnachweis und Lizenzangaben müssen vom Maintainer nachgetragen werden |
+| `Resonance - Main Theme 2.opus` | *Ausstehend* | *Ausstehend* | *Ausstehend* | In v0.4.0 hinzugefügt; Herkunftsnachweis und Lizenzangaben müssen vom Maintainer nachgetragen werden |
+| `Resonance - Alt Theme.opus` | *Ausstehend* | *Ausstehend* | *Ausstehend* | In v0.4.0 hinzugefügt; Herkunftsnachweis und Lizenzangaben müssen vom Maintainer nachgetragen werden |
 
 „Kostenlos herunterladbar“ allein ist keine Nutzungslizenz. Lizenztext bzw. Kaufbeleg passend aufbewahren.

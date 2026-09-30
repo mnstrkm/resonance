@@ -12,7 +12,10 @@
         if (this.drag || this.game.editor?.drag) this.cancel();
       });
       window.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") this.cancel();
+        if (e.key === "Escape" && (this.drag || this.game.editor?.drag)) {
+          this.cancel();
+          e.stopImmediatePropagation();
+        }
       });
     }
     point(e) {

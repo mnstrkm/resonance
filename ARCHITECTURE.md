@@ -73,7 +73,7 @@ Alle Sounddateien sind optional. Fehler beim Laden unterbrechen das Spiel nicht.
 
 Audio wird durch „Spiel starten“ freigeschaltet. Eine Kompressionsstufe und eine Stimmenbegrenzung verhindern Überlagerungen unbegrenzt vieler Klänge; sie ersetzen kein professionelles Sound-Mastering. Pause/Retry stoppen laufende Stimmen. Der Core-Erfolg besteht aus Voll-Ladung und späterer Abschlusswelle.
 
-## Editor, Leveldateien und Navigation (v0.6.0)
+## Editor, Leveldateien und Navigation (v1.0.0-rc.1)
 
 - `level-data.js`: prüft Typen, endliche Koordinaten, Arena-Grenzen und Überschneidungen. Versioniertes Exportformat `resonanz-level`, `formatVersion: 1`.
 - `level-loader.js`: lädt die Kampagnen-Level asynchron aus `levels/01.json` bis `levels/50.json`, validiert diese gegen `LevelData` und cacht sie für den Level-Modus.

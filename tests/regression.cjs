@@ -111,7 +111,7 @@ async function setup(search = "") {
 (async () => {
   const t = await setup(),
     { w, g, R, click, back, pointer, settle } = t;
-  assert.equal(R.version, "0.6.0");
+  assert.equal(R.version, "1.0.0-rc.1");
   assert(g.paused);
   assert.equal(g.ui.nav.depth, 0);
   await click("start");
@@ -139,7 +139,7 @@ async function setup(search = "") {
   for (let i = 0; i < 5; i++) {
     await click("pause");
     await click("resume");
-    assert.equal(g.ui.nav.depth, 1);
+    assert.equal(g.ui.nav.depth, 2);
     assert(!g.paused);
   }
   await click("pause");
@@ -152,7 +152,7 @@ async function setup(search = "") {
   await click("start");
   await click("mode-editor");
   assert.equal(g.ui.nav.route.screen, "editor");
-  assert.equal(g.ui.nav.depth, 1);
+  assert.equal(g.ui.nav.depth, 2);
   assert.equal(g.editor.layout.count, 0);
   assert(w.document.getElementById("editor-export"));
   assert(w.document.getElementById("editor-import"));
@@ -221,7 +221,7 @@ async function setup(search = "") {
   assert.equal(g.state.impulses, 3);
   assert.equal(g.state.mode, "editor");
   assert(!g.paused);
-  assert.equal(g.ui.nav.depth, 2);
+  assert.equal(g.ui.nav.depth, 3);
   const o = g.state.orbs[0];
   pointer("pointerdown", o.x, o.y);
   pointer("pointerup", o.x + 20, o.y);
@@ -280,20 +280,24 @@ async function setup(search = "") {
   await click("pause");
   await click("go-home");
   await click("start");
+  await click("mode-random");
   assert.equal(g.state.mode, "resonance");
-  assert(g.state.orbs.length >= 10 && g.state.orbs.length <= 15);
+  assert(
+    g.state.orbs.length >= R.Config.gameplay.minOrbs &&
+      g.state.orbs.length <= R.Config.gameplay.maxOrbs,
+  );
   // Genuine loss/win result paths and history back from results.
   g.state.phase = "chain";
   g.state.impulses = 0;
   g.state.orbs.forEach((o) => {
     o.vx = o.vy = 0;
   });
-  for (let i = 0; i < 100 && !g.paused; i++) g.step(1 / 120);
+  for (let i = 0; i < 200 && !g.paused; i++) g.step(1 / 120);
   assert.equal(g.ui.nav.route.panel, "result");
   assert.equal(g.state.phase, "lost");
   await click("next");
   assert.equal(g.state.phase, "ready");
-  assert.equal(g.ui.nav.depth, 1);
+  assert.equal(g.ui.nav.depth, 2);
   g.state.phase = "chain";
   g.state.energy = g.state.required;
   g.state.orbs.forEach((o) => {
@@ -304,7 +308,8 @@ async function setup(search = "") {
   g.state.projectiles = [];
   for (let i = 0; i < 500 && !g.paused; i++) g.step(1 / 120);
   assert.equal(g.state.phase, "won");
-  assert.equal(g.ui.nav.depth, 1);
+  assert.equal(g.ui.nav.depth, 2);
+  await back();
   await back();
   assert.equal(g.ui.nav.route.screen, "home");
   assert(g.paused);

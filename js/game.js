@@ -25,6 +25,7 @@
       this.accumulator = 0;
       this.last = 0;
       this.fullPlayed = false;
+      this.dirty = true;
       this.ui.update();
       document.addEventListener("visibilitychange", () => {
         if (document.hidden) {
@@ -39,8 +40,12 @@
       this.frame = this.frame.bind(this);
       requestAnimationFrame(this.frame);
     }
+    requestRedraw() {
+      this.dirty = true;
+    }
     setPaused(value) {
       this.paused = value;
+      this.dirty = true;
       this.input?.cancel();
       this.accumulator = 0;
       this.last = 0;
@@ -79,6 +84,8 @@
       this.input.cancel();
       this.audio.stop();
       this.particles.clear();
+      if (this.ui) this.ui.tutorialDismissed = false;
+      this.dirty = true;
       const md = modeData || (this.state && this.state.mode === this.mode ? this.state.modeData : {});
       this.state = R.createState(seed, this.mode, snapshot, md);
       this.chain = new R.Chain(this.state, (n, d) => this.event(n, d));
@@ -96,6 +103,7 @@
       if (this.paused || s.phase !== "ready" || s.impulses <= 0) return;
       const o = s.orbs.find((o) => o.id === id);
       if (!o || o.state !== "idle") return;
+      this.dirty = true;
       o.x = x;
       o.y = y;
       s.impulses--;
@@ -125,7 +133,9 @@
             if (s.mode === "level" && s.modeData.levelId) {
               const stars = R.Stars(s);
               try {
-                const ls = JSON.parse(localStorage.getItem("resonance.stars.v1") || "{}");
+                const raw = localStorage.getItem("resonance.stars.v1");
+                const parsed = raw ? JSON.parse(raw) : null;
+                const ls = parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
                 ls[s.modeData.levelId] = Math.max(ls[s.modeData.levelId] || 0, stars);
                 localStorage.setItem("resonance.stars.v1", JSON.stringify(ls));
               } catch (_) {}
@@ -179,16 +189,42 @@
           }
         }
       }
-      if (this.ui.nav.route.screen === "editor") {
-        if (!this.ui.nav.route.panel) this.editor.preview.time += dt;
-        this.renderer.draw(
-          this.editor.preview,
-          { items: [], effects: [] },
-          null,
-        );
-        this.editor.draw(this.renderer);
-      } else {
-        this.renderer.draw(this.state, this.particles, this.input.drag);
+      const route = this.ui.nav.route;
+      const screen = route.screen;
+      const panel = route.panel;
+      const covered = screen === "home" || screen === "modes" || screen === "levels";
+
+      let needsDraw = false;
+      if (!covered) {
+        if (screen === "editor") {
+          // Im Editor ohne ueberlagerndes Menue laufen sichtbare Idle-Animationen
+          if (!panel) {
+            this.editor.preview.time += dt;
+            needsDraw = true;
+          } else if (this.dirty) {
+            needsDraw = true;
+          }
+        } else if (!this.paused) {
+          // Laufendes Spiel immer zeichnen
+          needsDraw = true;
+        } else if (this.dirty || this.input.drag) {
+          // Im pausierten Zustand nur bei Aenderungen, Resize oder Drag zeichnen
+          needsDraw = true;
+        }
+      }
+
+      if (needsDraw) {
+        this.dirty = false;
+        if (screen === "editor") {
+          this.renderer.draw(
+            this.editor.preview,
+            { items: [], effects: [] },
+            null,
+          );
+          this.editor.draw(this.renderer);
+        } else {
+          this.renderer.draw(this.state, this.particles, this.input.drag);
+        }
       }
       requestAnimationFrame(this.frame);
     }

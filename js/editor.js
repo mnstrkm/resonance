@@ -25,6 +25,7 @@
       this.layout.count = this.layout.orbs.length;
       this.preview = R.createState(this.layout.seed, "editor", this.layout);
       this.game.ui?.updateEditor();
+      this.game.requestRedraw?.();
     }
     persist() {
       try {
@@ -117,6 +118,9 @@
     importLayout(data) {
       let target = data;
       if (typeof data === "string") {
+        if (data.charCodeAt(0) === 0xfeff) {
+          data = data.slice(1);
+        }
         try {
           target = JSON.parse(data);
         } catch (_) {

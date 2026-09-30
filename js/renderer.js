@@ -20,6 +20,7 @@
       this.canvas.height = Math.max(1, Math.round(box.height * dpr));
       this.scaleX = this.canvas.width / R.Config.arena.width;
       this.scaleY = this.canvas.height / R.Config.arena.height;
+      R.game?.requestRedraw?.();
     }
     draw(s, particles, drag) {
       const ctx = this.ctx,

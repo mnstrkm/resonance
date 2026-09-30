@@ -158,13 +158,19 @@
             if (!r.ok) continue;
             const buf = await this.ctx.decodeAudioData(await r.arrayBuffer());
             this.musicTracks.push(buf);
+            // Sobald ein erster Track geladen ist, kann er bei laufendem Kontext starten
+            if (!this.musicSource && !this.muted && this.musicVolume > 0 && this.ctx?.state === "running") {
+              this.startMusic();
+            }
           } catch { /* Fehlende Musikdateien sind erlaubt */ }
         }
-        this.startMusic();
+        if (!this.musicSource) {
+          this.startMusic();
+        }
       } catch { /* Keine Playlist → keine Musik, kein Fehler */ }
     }
     startMusic() {
-      if (!this.musicTracks.length || this.musicVolume === 0 || this.muted) return;
+      if (this.musicSource || !this.musicTracks.length || this.musicVolume === 0 || this.muted || !this.ctx) return;
       let nextIndex = this.musicIndex;
       if (this.musicTracks.length > 1) {
         while (nextIndex === this.musicIndex) {
@@ -174,18 +180,26 @@
         nextIndex = 0;
       }
       this.musicIndex = nextIndex;
-      this.musicSource = this.ctx.createBufferSource();
-      this.musicSource.buffer = this.musicTracks[this.musicIndex];
-      this.musicSource.connect(this.musicGain);
-      this.musicSource.onended = () => this.startMusic();
-      this.musicSource.start();
+      const source = this.ctx.createBufferSource();
+      this.musicSource = source;
+      source.buffer = this.musicTracks[this.musicIndex];
+      source.connect(this.musicGain);
+      source.onended = () => {
+        // Veraltete onended-Callbacks ignorieren, falls die Quelle bereits gestoppt oder ersetzt wurde
+        if (this.musicSource === source) {
+          this.musicSource = null;
+          this.startMusic();
+        }
+      };
+      source.start();
     }
     stopMusic() {
       if (this.musicSource) {
-        this.musicSource.onended = null;
-        try { this.musicSource.stop(); } catch {}
-        this.musicSource.disconnect();
+        const source = this.musicSource;
         this.musicSource = null;
+        source.onended = null;
+        try { source.stop(); } catch {}
+        try { source.disconnect(); } catch {}
       }
     }
     dimMusic() {

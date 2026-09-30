@@ -1,5 +1,5 @@
 (function (R) {
-  R.version = "0.6.0";
+  R.version = "1.0.0-rc.1";
   const $ = (id) => document.getElementById(id);
   const paths = {
     home: '<path d="m3 10 9-7 9 7M5 9v11h5v-6h4v6h5V9"/>',
@@ -81,15 +81,40 @@
           first?.focus();
         }
       });
+      this.tutorialDismissed = false;
       window.addEventListener("keydown", (e) => {
         if (e.key !== "Escape") return;
         e.preventDefault();
+        // 1. Waehrend eines aktiven Ziehvorgangs nur den Ziehvorgang abbrechen
         if (game.input.drag || game.editor.drag) {
           game.input.cancel();
           return;
         }
-        if (this.nav.route.panel) this.close();
-        else if (this.nav.route.screen !== "home") this.pause();
+        // 2. Sichtbares Tutorial oder offene Palette schliessen
+        if ($("tutorial-overlay") && !$("tutorial-overlay").hidden) {
+          this.dismissTutorial();
+          return;
+        }
+        if (this.nav.route.screen === "editor" && !$("orb-palette")?.hidden) {
+          $("orb-palette").hidden = true;
+          $("palette-toggle")?.setAttribute("aria-expanded", "false");
+          return;
+        }
+        // 3. Bei geoeffnetem Menue oberste Menueebene schliessen
+        if (this.nav.route.panel) {
+          this.close();
+          return;
+        }
+        // 4. In Moduswahl und Levelauswahl eine Ebene zurueckgehen
+        if (this.nav.route.screen === "modes" || this.nav.route.screen === "levels") {
+          this.nav.back();
+          return;
+        }
+        // 5. Im Hauptmenue bewirkt Escape nichts; im laufenden Spiel oder Editor oeffnet es die Pause
+        if (this.nav.route.screen === "game" || this.nav.route.screen === "editor") {
+          this.pause();
+          return;
+        }
       });
       this.renderRoute(this.nav.route);
     }
@@ -164,25 +189,25 @@
       this.update();
       if (editing) this.updateEditor();
       if (levels) this.renderLevels();
+      this.game.requestRedraw?.();
       
       if (route.screen === "game" && this.game.state.mode === "level" && this.game.state.phase === "ready" && !route.panel) {
         const lvl = this.game.state.modeData?.levelId;
-        if (R.Tutorials[lvl]) {
+        if (R.Tutorials[lvl] && !this.tutorialDismissed) {
           $("tutorial-text").innerText = R.Tutorials[lvl];
           $("tutorial-overlay").hidden = false;
-          $("tutorial-overlay").onclick = () => {
-            this.game.audio.play("ui-click");
-            $("tutorial-overlay").hidden = true;
-            // Delete it from Tutorials so it doesn't show again on restart during same session?
-            // Actually, keep it. If they replay the level, they might want to read it again. Or not.
-            // Let's just rely on the user clicking it away.
-          };
+          $("tutorial-overlay").onclick = () => this.dismissTutorial();
         } else {
           $("tutorial-overlay").hidden = true;
         }
       } else {
         if ($("tutorial-overlay")) $("tutorial-overlay").hidden = true;
       }
+    }
+    dismissTutorial() {
+      this.game.audio.play("ui-click");
+      this.tutorialDismissed = true;
+      if ($("tutorial-overlay")) $("tutorial-overlay").hidden = true;
     }
     hint(text) {
       $("hint").textContent = text;
@@ -193,6 +218,16 @@
           ? "Orb ziehen und loslassen"
           : "Resonanz entfaltet sich …",
       );
+    }
+    getSavedStars() {
+      try {
+        const raw = localStorage.getItem("resonance.stars.v1");
+        if (!raw) return {};
+        const parsed = JSON.parse(raw);
+        return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+      } catch (_) {
+        return {};
+      }
     }
     async renderLevels() {
       if (!this._levelsLoaded) {
@@ -207,16 +242,16 @@
       const start = (page - 1) * perPage + 1;
       const end = Math.min(page * perPage, totalLevels);
       let totalEarned = 0, totalMax = 0;
-        let allStars = {};
-        try { allStars = JSON.parse(localStorage.getItem("resonance.stars.v1")) || {}; } catch(e){}
-        for (let i = 1; i <= 50; i++) {
-          const dId = i.toString().padStart(2, "0");
-          if (R.LevelLoader.get(dId)) {
-            totalMax += 3;
-            totalEarned += allStars[dId] || 0;
-          }
+      const allStars = this.getSavedStars();
+      for (let i = 1; i <= 50; i++) {
+        const dId = i.toString().padStart(2, "0");
+        if (R.LevelLoader.get(dId)) {
+          totalMax += 3;
+          const s = allStars[dId];
+          totalEarned += typeof s === "number" ? Math.max(0, Math.min(3, s)) : 0;
         }
-        let html = `<div class="menu-heading"><h2>Level <span style="font-size: 0.6em; color: var(--accent); margin-left: 10px; font-weight: normal;">&#9733; ${totalEarned} / ${totalMax}</span></h2>${iconButton("close-levels", "close", "Schließen")}</div>`;
+      }
+      let html = `<div class="menu-heading"><h2>Level <span style="font-size: 0.6em; color: var(--accent); margin-left: 10px; font-weight: normal;">&#9733; ${totalEarned} / ${totalMax}</span></h2>${iconButton("close-levels", "close", "Schließen")}</div>`;
       html += `<div class="levels-grid" style="display:grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 20px 0;">`;
       for (let i = start; i <= end; i++) {
         const id = i.toString().padStart(2, "0");
@@ -224,14 +259,11 @@
         if (!levelData) {
           html += `<button disabled class="level-button locked" aria-label="Level ${i} gesperrt">🔒</button>`;
         } else {
-          const starsStr = localStorage.getItem("resonance.stars.v1");
-          let stars = 0;
-          if (starsStr) {
-            try { const s = JSON.parse(starsStr); stars = s[id] || 0; } catch(e){}
-          }
+          const s = allStars[id];
+          const stars = typeof s === "number" ? Math.max(0, Math.min(3, s)) : 0;
           let starsHtml = `<div class="stars" style="font-size: 10px; margin-top: 4px; display:flex; gap: 2px; justify-content:center;">`;
-          for (let s = 0; s < 3; s++) {
-            const color = s < stars ? "var(--accent)" : "rgba(255,255,255,0.2)";
+          for (let sIdx = 0; sIdx < 3; sIdx++) {
+            const color = sIdx < stars ? "var(--accent)" : "rgba(255,255,255,0.2)";
             starsHtml += `<span style="color:${color}">★</span>`;
           }
           starsHtml += `</div>`;
@@ -312,16 +344,20 @@
       this.nav.go({ screen: this.nav.route.screen, panel: name });
     }
     pause() {
-      if (this.nav.route.screen === "home" || this.nav.route.panel) return;
+      if (this.nav.route.screen !== "game" && this.nav.route.screen !== "editor") return;
+      if (this.nav.route.panel) return;
       this.panel("pause");
     }
     showPause() {
       const editor = this.nav.route.screen === "editor",
         custom = this.game.mode === "editor",
-        levelMode = this.game.mode === "level";
+        levelMode = !editor && this.nav.route.screen === "game" && this.game.mode === "level";
       this.game.audio.dimMusic?.();
-      const pauseLvl = Number(this.game.state.modeData?.levelId);
-      const pauseTitle = levelMode && !isNaN(pauseLvl) && pauseLvl > 0 ? `Level ${pauseLvl} - Pause` : "Pause";
+      const pauseLvl = levelMode ? Number(this.game.state?.modeData?.levelId) : null;
+      const pauseTitle =
+        levelMode && !isNaN(pauseLvl) && pauseLvl > 0
+          ? `Level ${pauseLvl} – Pause`
+          : "Pause";
       this.open(
         `<div class="menu-heading"><h2>${pauseTitle}</h2>${iconButton("go-home", "home", "Hauptmenü")}</div>
         <div class="speed-setting"><span id="speed-label">Geschwindigkeit</span><div class="speed-options" role="group" aria-labelledby="speed-label">${[0.5, 1, 2].map((speed) => `<button type="button" data-speed="${speed}" aria-pressed="${this.game.speed === speed}">${String(speed).replace(".", ",")}×</button>`).join("")}</div></div>

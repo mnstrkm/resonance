@@ -2,7 +2,7 @@
 
 **Ein Impuls kann eine ganze Kettenreaktion auslösen.** Resonanz ist ein Browser-Spiel über Orbs mit unterschiedlichen Fähigkeiten, gleitende Bewegung und das Zusammenspiel ihrer Effekte. Verschiebe einen Orb, beobachte die Reaktion und versuche, mit höchstens drei Impulsen die Energie aller Orbs zum Core zu bringen.
 
-**[Jetzt Resonanz spielen](https://mnstrkm.github.io/resonance/)** · [Quellcode](https://github.com/mnstrkm/resonance) · Version **0.6.0**
+**[Jetzt Resonanz spielen](https://mnstrkm.github.io/resonance/)** · [Quellcode](https://github.com/mnstrkm/resonance) · Version **1.0.0-rc.1**
 
 Das Spiel läuft im Browser auf Geräten mit Touch oder Maus. Eine Installation ist nicht erforderlich.
 
@@ -18,7 +18,7 @@ Ungültige Platzierungen verbrauchen keinen Impuls. Die Anleitung mit den Orb-F�
 
 Nach dem Klick auf **Spiel starten** stehen drei Modi zur Auswahl:
 
-- **Level**: 50 nacheinander freischaltbare, handgefertigte Herausforderungen. In den ersten Leveln werden die Mechaniken der einzelnen Orbs schrittweise durch interaktive Tutorials erklärt. Sammle bis zu 3 Sterne pro Level, abhängig von den benötigten Impulsen (1 Impuls = 3 Sterne, 2 Impulse = 2 Sterne, 3 Impulse = 1 Stern).
+- **Level**: 50 handgefertigte Herausforderungen, die über die Levelauswahl frei gespielt werden können. In den ersten Leveln werden die Mechaniken der einzelnen Orbs schrittweise durch interaktive Tutorials erklärt. Sammle bis zu 3 Sterne pro Level, abhängig von den benötigten Impulsen (1 Impuls = 3 Sterne, 2 Impulse = 2 Sterne, 3 Impulse = 1 Stern).
 - **Zufall**: Der klassische Endlosmodus mit prozedural generierten Feldern und teilbaren Feld-Codes.
 - **Eigenes Feld**: Der integrierte Level-Editor zum freien Gestalten, Testen, Importieren und Exportieren eigener Aufbauten.
 
@@ -54,7 +54,7 @@ Die zentralen Zahlen stehen in [js/config.js](js/config.js). Distanzen sind **lo
 
 | Ziel | Einstellung | Aktueller Wert |
 | --- | --- | ---: |
-| Anzahl zufällig erzeugter Orbs | `gameplay.minOrbs` / `maxOrbs` | 10 / 15 |
+| Anzahl zufällig erzeugter Orbs | `gameplay.minOrbs` / `maxOrbs` | 5 / 20 |
 | Verfügbare Impulse | `gameplay.impulses` | 3 |
 | Benötigte Energie im normalen Spiel | `gameplay.requiredRatio` | 1 = alle Orbs |
 | Ladezeit eines aktivierten Orbs | `gameplay.chargeTime` | 0,5 s |
@@ -82,7 +82,7 @@ Im Editor (**Eigenes Feld**) stehen Schaltflächen zum **Exportieren** (Download
 - **Exportieren**: Lädt den aktuellen Entwurf als JSON-Datei herunter.
 - **Importieren**: Liest eine vorhandene Level-Datei ein, prüft Format, Orb-Positionen und Regeln und lädt das Feld unmittelbar zur Bearbeitung und zum Spielen in den Editor.
 
-Die JSON-Datei enthält unter anderem Positionen und Typen der Orbs, den Seed sowie Spiel- und Balanceinformationen. Du kannst diese Dateien im Ordner `levels/` als `01.json`, `02.json` bis `50.json` ablegen. Das Spiel erkennt bis zu 50 solcher Level automatisch über [js/level-loader.js](js/level-loader.js) und schaltet sie im **Level-Modus** frei. Fehlt eine fortlaufende Datei, wird der Level-Platz als gesperrt markiert.
+Die JSON-Datei enthält unter anderem Positionen und Typen der Orbs, den Seed sowie Spiel- und Balanceinformationen. Du kannst diese Dateien im Ordner `levels/` als `01.json`, `02.json` bis `50.json` ablegen. Das Spiel erkennt bis zu 50 solcher Level automatisch über [js/level-loader.js](js/level-loader.js) und stellt sie im **Level-Modus** zur Verfügung. Fehlt eine Datei, wird der entsprechende Level-Platz als gesperrt markiert.
 
 ### Versionen und Änderungen
 
