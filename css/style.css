@@ -706,28 +706,44 @@ input[type="range"] {
 }
 #editor-controls {
   position: relative;
-  margin-top: 8px;
+  margin-top: 6px;
 }
-.editor-toolbar { display: flex; flex-wrap: wrap; gap: 5px;
+.editor-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  justify-content: center;
+  align-items: center;
+}
+.editor-toolbar-row {
+  display: flex;
+  gap: 5px;
   justify-content: center;
   align-items: center;
 }
 .editor-toolbar .icon-button {
-  min-height: 44px;
-  width: 44px;
-  padding: 7px;
+  min-height: 40px;
+  height: 40px;
+  width: 40px;
+  padding: 6px;
   border-color: transparent;
+}
+.editor-toolbar-row.file-row .icon-button {
+  min-height: 42px;
+  height: 42px;
+  width: 42px;
 }
 #editor-play {
   background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
   color: #020617;
+  width: 48px;
 }
 .editor-status {
-  font-size: 10px;
+  font-size: 11px;
   color: var(--muted);
   text-align: center;
-  margin: 5px 0 0;
-  min-height: 14px;
+  margin: 4px 0 0;
+  min-height: 16px;
 }
 .orb-palette {
   position: absolute;
@@ -762,12 +778,15 @@ input[type="range"] {
   border-color: #d8cfba;
   background: #ffffff09;
 }
+.editing .game-footer {
+  display: none;
+}
 .editing .game-panel {
   max-width: min(
     420px,
     calc(
       (
-          100svh - 206px - env(safe-area-inset-top) -
+          100svh - 215px - env(safe-area-inset-top) -
             env(safe-area-inset-bottom)
         ) *
         390 / 620
@@ -777,7 +796,7 @@ input[type="range"] {
     420px,
     calc(
       (
-          100dvh - 206px - env(safe-area-inset-top) -
+          100dvh - 215px - env(safe-area-inset-top) -
             env(safe-area-inset-bottom)
         ) *
         390 / 620
@@ -785,12 +804,17 @@ input[type="range"] {
   );
 }
 @media (max-width: 350px) {
-  .editor-toolbar {
-    gap: 0;
+  .editor-toolbar-row {
+    gap: 2px;
   }
   .editor-toolbar .icon-button {
-    width: 40px;
-    flex-basis: 40px;
+    width: 38px;
+    height: 38px;
+    min-height: 38px;
+    padding: 5px;
+  }
+  #editor-play {
+    width: 44px;
   }
 }
 

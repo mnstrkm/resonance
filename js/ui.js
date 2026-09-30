@@ -1,5 +1,5 @@
 (function (R) {
-  R.version = "0.5.0";
+  R.version = "0.6.0";
   const $ = (id) => document.getElementById(id);
   const paths = {
     home: '<path d="m3 10 9-7 9 7M5 9v11h5v-6h4v6h5V9"/>',
@@ -9,6 +9,7 @@
     trash: '<path d="M4 6h16M9 6V3h6v3M6 6l1 15h10l1-15M10 10v7M14 10v7"/>',
     play: '<path d="m8 4 12 8-12 8Z"/>',
     download: '<path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/>',
+    upload: '<path d="M12 15V3m5 5-5-5-5 5M4 16v5h16v-5"/>',
     edit: '<path d="m4 16 12-12 4 4L8 20H4Zm10-10 4 4"/>',
       circle: '<circle cx="12" cy="12" r="10" stroke-dasharray="4 4"/>',
       line: '<line x1="4" y1="20" x2="20" y2="4" stroke-dasharray="4 4"/>',
@@ -549,17 +550,20 @@
     }
     buildEditor() {
       $("editor-toolbar").innerHTML =
-        iconButton("palette-toggle", "add", "Orbs auswählen") +
-        iconButton("editor-undo", "undo", "Rückgängig") +
-        iconButton("editor-reset", "trash", "Alle Orbs löschen") +
+        '<div class="editor-toolbar-row">' +
+          iconButton("palette-toggle", "add", "Orbs auswählen") +
           iconButton("guide-line", "line", "Hilfslinie hinzufügen") +
           iconButton("guide-circle", "circle", "Hilfskreis hinzufügen") +
           iconButton("editor-reset-guides", "x-circle", "Alle Hilfslinien löschen") +
-        iconButton("editor-delete", "close", "Ausgewählten Orb entfernen") +
-        (this.game.editor.creator
-          ? iconButton("editor-export", "download", "Leveldatei speichern")
-          : "") +
-        iconButton("editor-play", "play", "Feld spielen");
+          iconButton("editor-delete", "close", "Ausgewählten Orb entfernen") +
+          iconButton("editor-undo", "undo", "Rückgängig") +
+          iconButton("editor-reset", "trash", "Alle Orbs löschen") +
+        '</div>' +
+        '<div class="editor-toolbar-row file-row">' +
+          iconButton("editor-import", "upload", "Leveldatei laden") +
+          iconButton("editor-export", "download", "Leveldatei speichern") +
+          iconButton("editor-play", "play", "Feld spielen") +
+        '</div>';
       $("palette-toggle").setAttribute("aria-controls", "orb-palette");
       $("palette-toggle").setAttribute("aria-expanded", "false");
       $("orb-palette").innerHTML = Object.entries(R.OrbTypes)
@@ -595,25 +599,64 @@
           };
         });
       $("editor-undo").onclick = () => { this.game.audio.play("ui-click"); editor.undo(); };
-      $("editor-reset").onclick = () => { this.game.audio.play("ui-click"); editor.reset(); editor.resetGuides(); };
-        $("guide-line").onclick = () => { this.game.audio.play("ui-click"); editor.addGuide("line"); };
-        $("guide-circle").onclick = () => { this.game.audio.play("ui-click"); editor.addGuide("circle"); };
-        $("editor-reset-guides").onclick = () => { this.game.audio.play("ui-click"); editor.resetGuides(); };
+      $("editor-reset").onclick = () => { this.game.audio.play("ui-click"); editor.reset(); };
+      $("guide-line").onclick = () => { this.game.audio.play("ui-click"); editor.addGuide("line"); };
+      $("guide-circle").onclick = () => { this.game.audio.play("ui-click"); editor.addGuide("circle"); };
+      $("editor-reset-guides").onclick = () => { this.game.audio.play("ui-click"); editor.resetGuides(); };
       $("editor-delete").onclick = () => { this.game.audio.play("ui-click"); editor.remove(); };
       $("editor-play").onclick = () => { this.game.audio.play("ui-click"); this.playEditor(); };
-      if ($("editor-export"))
-        $("editor-export").onclick = () => {
-          this.game.audio.play("ui-click");
-          this.panel("export");
+      $("editor-export").onclick = () => {
+        this.game.audio.play("ui-click");
+        this.panel("export");
+      };
+      $("editor-import").onclick = () => {
+        this.game.audio.play("ui-click");
+        $("editor-import-input")?.click();
+      };
+      if ($("editor-import-input")) {
+        $("editor-import-input").onchange = (e) => {
+          const file = e.target.files && e.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = (evt) => {
+            try {
+              const res = editor.importLayout(evt.target.result);
+              if (res.success) {
+                this.game.audio.play("ui-click");
+                editor.statusMessage = res.name
+                  ? `Level „${res.name}“ geladen.`
+                  : "Level erfolgreich geladen.";
+                setTimeout(() => {
+                  if (editor.statusMessage) {
+                    editor.statusMessage = null;
+                    this.updateEditor();
+                  }
+                }, 4000);
+              } else {
+                editor.statusMessage = res.error || "Ungültiges Level.";
+              }
+            } catch (_) {
+              editor.statusMessage = "Datei ist kein gültiges JSON.";
+            }
+            $("editor-import-input").value = "";
+            this.updateEditor();
+          };
+          reader.onerror = () => {
+            editor.statusMessage = "Fehler beim Lesen der Datei.";
+            $("editor-import-input").value = "";
+            this.updateEditor();
+          };
+          reader.readAsText(file);
         };
+      }
     }
     updateEditor() {
       const e = this.game.editor;
       if (!e || !$("editor-play")) return;
       $("editor-play").disabled = !e.layout.count;
       $("editor-undo").disabled = !e.history.length;
-      $("editor-reset").disabled = !e.layout.count;
-        $("editor-reset-guides").hidden = !e.guides || !e.guides.length;
+      $("editor-reset").disabled = !e.layout.count && (!e.guides || !e.guides.length);
+      $("editor-reset-guides").hidden = !e.guides || !e.guides.length;
       $("editor-delete").hidden = e.selected === null;
       if ($("editor-export")) $("editor-export").disabled = !e.layout.count;
       $("orb-palette")
@@ -624,13 +667,15 @@
             String(button.dataset.type === e.type),
           ),
         );
-      $("editor-status").textContent = !e.availableStorage
-        ? "Entwurf bleibt nur bis zum Schließen erhalten."
-        : e.layout.count >= R.LevelData.maxOrbs
-          ? "Maximale Orb-Anzahl erreicht."
-          : e.type
-            ? R.OrbTypes[e.type].name + " · freien Platz wählen"
-            : "Orb-Typ auswählen";
+      $("editor-status").textContent = e.statusMessage || (
+        !e.availableStorage
+          ? "Entwurf bleibt nur bis zum Schließen erhalten."
+          : e.layout.count >= R.LevelData.maxOrbs
+            ? "Maximale Orb-Anzahl erreicht."
+            : e.type
+              ? R.OrbTypes[e.type].name + " · freien Platz wählen"
+              : "Orb-Typ auswählen"
+      );
       if (this.nav.route.screen === "editor") this.update();
     }
   };

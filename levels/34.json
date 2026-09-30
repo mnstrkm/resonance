@@ -1,20 +1,24 @@
-{
+﻿{
   "format": "resonanz-level",
   "formatVersion": 1,
   "gameVersion": "0.3.1",
-  "name": "Level 19",
+  "name": "Level 45",
   "arena": { "width": 390, "height": 620, "padding": 24 },
   "layout": {
-    "seed": 5019,
-    "count": 7,
+    "seed": 5045,
+    "count": 11,
     "orbs": [
-      { "id": 0, "type": "blue", "x": 100, "y": 310 },
-      { "id": 1, "type": "pearl", "x": 55, "y": 250 },
-      { "id": 2, "type": "pearl", "x": 55, "y": 370 },
-      { "id": 3, "type": "orange", "x": 195, "y": 310 },
-      { "id": 4, "type": "red", "x": 298, "y": 310 },
-      { "id": 5, "type": "pearl", "x": 341, "y": 250 },
-      { "id": 6, "type": "pearl", "x": 341, "y": 370 }
+      { "id": 0, "type": "gold", "x": 195, "y": 300 },
+      { "id": 1, "type": "red", "x": 105, "y": 115 },
+      { "id": 2, "type": "pearl", "x": 220, "y": 150 },
+      { "id": 3, "type": "pearl", "x": 165, "y": 215 },
+      { "id": 4, "type": "pearl", "x": 245, "y": 215 },
+      { "id": 5, "type": "blue", "x": 115, "y": 480 },
+      { "id": 6, "type": "green", "x": 275, "y": 480 },
+      { "id": 7, "type": "pearl", "x": 155, "y": 395 },
+      { "id": 8, "type": "pearl", "x": 235, "y": 395 },
+      { "id": 9, "type": "pearl", "x": 195, "y": 450 },
+      { "id": 10, "type": "red", "x": 195, "y": 565 }
     ]
   },
   "rules": { "impulses": 3, "target": "all" },

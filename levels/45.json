@@ -1,0 +1,155 @@
+{
+  "format": "resonanz-level",
+  "formatVersion": 1,
+  "gameVersion": "0.5.0",
+  "name": "Eigenes Feld",
+  "arena": {
+    "width": 390,
+    "height": 620,
+    "padding": 24
+  },
+  "layout": {
+    "seed": 5019,
+    "count": 13,
+    "orbs": [
+      {
+        "id": 0,
+        "type": "green",
+        "x": 142.4260118381059,
+        "y": 236.31568381430358
+      },
+      {
+        "id": 1,
+        "type": "green",
+        "x": 250.23596224604063,
+        "y": 236.31568381430358
+      },
+      {
+        "id": 2,
+        "type": "red",
+        "x": 195,
+        "y": 310
+      },
+      {
+        "id": 3,
+        "type": "gold",
+        "x": 195,
+        "y": 404.1061994795896
+      },
+      {
+        "id": 4,
+        "type": "blue",
+        "x": 193.0535781224166,
+        "y": 160.01262905872886
+      },
+      {
+        "id": 5,
+        "type": "gold",
+        "x": 338.4092307857393,
+        "y": 512.417317605825
+      },
+      {
+        "id": 6,
+        "type": "violet",
+        "x": 39.071567054030936,
+        "y": 514.7498050181139
+      },
+      {
+        "id": 7,
+        "type": "gold",
+        "x": 350.80340987657496,
+        "y": 105.4143629184041
+      },
+      {
+        "id": 8,
+        "type": "orange",
+        "x": 73.3667879401724,
+        "y": 469.7167109452465
+      },
+      {
+        "id": 9,
+        "type": "orange",
+        "x": 303.7430939358037,
+        "y": 463.4872285559493
+      },
+      {
+        "id": 10,
+        "type": "orange",
+        "x": 295.3139782576255,
+        "y": 178.27759953210577
+      },
+      {
+        "id": 11,
+        "type": "orange",
+        "x": 103.91693261202008,
+        "y": 181.43930638934253
+      },
+      {
+        "id": 12,
+        "type": "red",
+        "x": 51.59076921426069,
+        "y": 107.58268239417498
+      }
+    ]
+  },
+  "rules": {
+    "impulses": 3,
+    "target": "all"
+  },
+  "balance": {
+    "gameplay": {
+      "minOrbs": 5,
+      "maxOrbs": 20,
+      "impulses": 3,
+      "requiredRatio": 1,
+      "chargeTime": 0.5,
+      "orbRadius": 13,
+      "moveRadius": 64,
+      "minDrag": 9,
+      "hitRadius": 25,
+      "coreEnergy": 1
+    },
+    "abilities": {
+      "red": {
+        "radius": 100,
+        "force": 150
+      },
+      "blue": {
+        "radius": 100,
+        "force": 125
+      },
+      "violet": {
+        "radius": 100,
+        "force": 100,
+        "burstForce": 145,
+        "pullTime": 0.34
+      },
+      "green": {
+        "radius": 175,
+        "force": 70,
+        "recoil": 34,
+        "speed": 420
+      },
+      "gold": {
+        "searchTime": 0.34,
+        "travelTime": 0.5
+      },
+      "orange": {
+        "radius": 70,
+        "multiplier": 1.65,
+        "rangeMultiplier": 1.15
+      }
+    },
+    "physics": {
+      "step": 0.008333333333333333,
+      "maxFrame": 0.05,
+      "damping": 1.9,
+      "restitution": 0.64,
+      "stopSpeed": 2.8,
+      "settleTime": 0.28,
+      "maxSpeed": 280,
+      "collisionThreshold": 22,
+      "collisionCooldown": 0.13
+    }
+  }
+}

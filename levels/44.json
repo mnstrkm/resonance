@@ -1,0 +1,173 @@
+{
+  "format": "resonanz-level",
+  "formatVersion": 1,
+  "gameVersion": "0.5.0",
+  "name": "Eigenes Feld",
+  "arena": {
+    "width": 390,
+    "height": 620,
+    "padding": 24
+  },
+  "layout": {
+    "seed": 5022,
+    "count": 16,
+    "orbs": [
+      {
+        "id": 0,
+        "type": "red",
+        "x": 232.1199579955278,
+        "y": 383.7691805037793
+      },
+      {
+        "id": 1,
+        "type": "red",
+        "x": 175.2098162528467,
+        "y": 64.80190055221966
+      },
+      {
+        "id": 2,
+        "type": "pearl",
+        "x": 266.67251304004304,
+        "y": 462.87073777000444
+      },
+      {
+        "id": 3,
+        "type": "green",
+        "x": 299.64717746306485,
+        "y": 166.2066037218314
+      },
+      {
+        "id": 4,
+        "type": "gold",
+        "x": 127.74016704169475,
+        "y": 304.82779150225605
+      },
+      {
+        "id": 5,
+        "type": "blue",
+        "x": 311.1201113974588,
+        "y": 473.67555303960546
+      },
+      {
+        "id": 6,
+        "type": "blue",
+        "x": 156.730136617955,
+        "y": 475.7029832686869
+      },
+      {
+        "id": 7,
+        "type": "green",
+        "x": 47.149551903614395,
+        "y": 401.19623904531113
+      },
+      {
+        "id": 8,
+        "type": "orange",
+        "x": 166.0635899930846,
+        "y": 236.45089698375727
+      },
+      {
+        "id": 9,
+        "type": "green",
+        "x": 302.45524141233375,
+        "y": 310
+      },
+      {
+        "id": 10,
+        "type": "pearl",
+        "x": 146.86127872720556,
+        "y": 387.9819208044164
+      },
+      {
+        "id": 11,
+        "type": "pearl",
+        "x": 195.71230909202507,
+        "y": 356.183865115063
+      },
+      {
+        "id": 12,
+        "type": "pearl",
+        "x": 217.18114492846888,
+        "y": 311.41826479082704
+      },
+      {
+        "id": 13,
+        "type": "pearl",
+        "x": 210.46050579062955,
+        "y": 251.24711027566417
+      },
+      {
+        "id": 14,
+        "type": "pearl",
+        "x": 91.58791330105299,
+        "y": 388.05239400297876
+      },
+      {
+        "id": 15,
+        "type": "violet",
+        "x": 45.6590006878922,
+        "y": 224.04364210913707
+      }
+    ]
+  },
+  "rules": {
+    "impulses": 3,
+    "target": "all"
+  },
+  "balance": {
+    "gameplay": {
+      "minOrbs": 5,
+      "maxOrbs": 20,
+      "impulses": 3,
+      "requiredRatio": 1,
+      "chargeTime": 0.5,
+      "orbRadius": 13,
+      "moveRadius": 64,
+      "minDrag": 9,
+      "hitRadius": 25,
+      "coreEnergy": 1
+    },
+    "abilities": {
+      "red": {
+        "radius": 100,
+        "force": 150
+      },
+      "blue": {
+        "radius": 100,
+        "force": 125
+      },
+      "violet": {
+        "radius": 100,
+        "force": 100,
+        "burstForce": 145,
+        "pullTime": 0.34
+      },
+      "green": {
+        "radius": 175,
+        "force": 70,
+        "recoil": 34,
+        "speed": 420
+      },
+      "gold": {
+        "searchTime": 0.34,
+        "travelTime": 0.5
+      },
+      "orange": {
+        "radius": 70,
+        "multiplier": 1.65,
+        "rangeMultiplier": 1.15
+      }
+    },
+    "physics": {
+      "step": 0.008333333333333333,
+      "maxFrame": 0.05,
+      "damping": 1.9,
+      "restitution": 0.64,
+      "stopSpeed": 2.8,
+      "settleTime": 0.28,
+      "maxSpeed": 280,
+      "collisionThreshold": 22,
+      "collisionCooldown": 0.13
+    }
+  }
+}
