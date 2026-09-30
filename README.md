@@ -2,7 +2,7 @@
 
 **Ein Impuls kann eine ganze Kettenreaktion auslösen.** Resonanz ist ein Browser-Spiel über Orbs mit unterschiedlichen Fähigkeiten, gleitende Bewegung und das Zusammenspiel ihrer Effekte. Verschiebe einen Orb, beobachte die Reaktion und versuche, mit höchstens drei Impulsen die Energie aller Orbs zum Core zu bringen.
 
-**[Jetzt Resonanz spielen](https://mnstrkm.github.io/resonance/)** · [Quellcode](https://github.com/mnstrkm/resonance) · Version **0.4.0**
+**[Jetzt Resonanz spielen](https://mnstrkm.github.io/resonance/)** · [Quellcode](https://github.com/mnstrkm/resonance) · Version **0.5.0**
 
 Das Spiel läuft im Browser auf Geräten mit Touch oder Maus. Eine Installation ist nicht erforderlich.
 

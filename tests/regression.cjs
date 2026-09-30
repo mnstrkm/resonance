@@ -111,7 +111,7 @@ async function setup(search = "") {
 (async () => {
   const t = await setup(),
     { w, g, R, click, back, pointer, settle } = t;
-  assert.equal(R.version, "0.4.0");
+  assert.equal(R.version, "0.5.0");
   assert(g.paused);
   assert.equal(g.ui.nav.depth, 0);
   await click("start");

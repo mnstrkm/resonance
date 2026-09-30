@@ -1,10 +1,10 @@
 :root {
   color-scheme: dark;
-  --bg: #0c131c;
-  --ink: #e5e5dc;
-  --muted: #8796a2;
-  --accent: #d8cfb8;
-  --line: #ffffff14;
+  --bg: #03050a;
+  --ink: #f8fafc;
+  --muted: #64748b;
+  --accent: #e0e7ff;
+  --line: rgba(255,255,255,0.04);
   font-family:
     Inter,
     "Segoe UI",
@@ -18,7 +18,7 @@
 }
 body {
   margin: 0;
-  background: radial-gradient(ellipse at 50% 40%, #1b2935, var(--bg) 70%);
+  background: radial-gradient(circle at 50% 0%, #0f172a, var(--bg) 80%);
   color: var(--ink);
   min-height: 100svh;
 }
@@ -31,7 +31,7 @@ button {
   color: inherit;
   background: #ffffff06;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 99px;
   padding: 13px 17px;
   transition:
     background 0.15s,
@@ -39,7 +39,7 @@ button {
   min-height: 44px;
 }
 button:hover {
-  background: #ffffff0e;
+  background: rgba(255,255,255,0.08); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 button:active {
   transform: translateY(1px);
@@ -111,7 +111,7 @@ button:disabled {
 .eyebrow {
   font-size: 9px;
   letter-spacing: 2.5px;
-  font-weight: 600;
+  font-weight: 500;
   color: #a8b4bd;
   line-height: 1.7;
 }
@@ -142,7 +142,7 @@ button:disabled {
 #progress {
   height: 100%;
   width: 0;
-  background: linear-gradient(90deg, #81b8c4, #e2cda7);
+  background: linear-gradient(90deg, #38bdf8, #818cf8, #e879f9); box-shadow: 0 0 10px rgba(129, 140, 248, 0.5);
   transition: width 0.4s;
 }
 .arena-wrap {
@@ -150,8 +150,8 @@ button:disabled {
   aspect-ratio: 390/620;
   border-radius: 22px;
   overflow: hidden;
-  box-shadow: 0 18px 65px #00000020;
-  border: 1px solid #ffffff08;
+  box-shadow: 0 12px 36px rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.06);
 }
 canvas {
   width: 100%;
@@ -175,14 +175,14 @@ canvas {
   display: block;
   width: 7px;
   height: 7px;
-  border: 1px solid #74818d;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 50%;
   background: transparent;
 }
 .pip.available {
-  background: #d7c9a5;
-  border-color: #dfd0ac;
-  box-shadow: 0 0 10px #e0c58833;
+  background: var(--accent);
+  border-color: #ffffff;
+  box-shadow: 0 0 8px rgba(224, 231, 255, 0.35);
 }
 #impulse-label {
   font-size: 9px;
@@ -228,7 +228,7 @@ canvas {
   display: none;
 }
 .welcome {
-  background: radial-gradient(ellipse at 50% 35%, #243543, #101923 65%);
+  background: radial-gradient(circle at 50% 30%, rgba(15,23,42,0.85), rgba(3,5,10,0.98) 75%); backdrop-filter: blur(10px);
   z-index: 12;
 }
 .welcome-card {
@@ -263,7 +263,7 @@ h1 {
   font:
     64px Georgia,
     serif;
-  letter-spacing: -3px;
+  letter-spacing: -2px; font-weight: 300;
   margin: 0 0 20px;
   font-weight: 400;
 }
@@ -281,16 +281,16 @@ h1 {
   margin: 14px 0 24px;
 }
 .primary {
-  background: #d8cfba;
-  color: #1a2730;
-  border: 1px solid #e4dbc6;
-  font-weight: 600;
+  background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+  color: #020617;
+  border: none; box-shadow: 0 0 20px rgba(203, 213, 225, 0.15);
+  font-weight: 500;
   display: block;
   width: 100%;
   padding: 16px 22px;
 }
 .primary:hover {
-  background: #eee2c9;
+  background: #f8fafc; box-shadow: 0 0 25px rgba(255,255,255,0.3); transform: scale(1.02);
 }
 .primary span {
   float: right;
@@ -306,7 +306,7 @@ h1 {
   margin-top: 28px;
 }
 .modal-card {
-  background: #17232e;
+  background: rgba(10,15,25,0.7); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); box-shadow: 0 25px 80px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.08);
   border: 1px solid #ffffff12;
   border-radius: 24px;
   max-width: 400px;
@@ -404,12 +404,13 @@ input[type="range"] {
 .seed-input {
   width: 100%;
   padding: 14px;
-  border: 1px solid #ffffff30;
-  background: #101923;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(0,0,0,0.3);
   color: var(--ink);
-  border-radius: 10px;
+  border-radius: 99px;
   font-size: 20px;
   letter-spacing: 3px;
+  text-align: center;
 }
 @media (max-width: 480px) {
   .app {
@@ -554,13 +555,15 @@ input[type="range"] {
 /* Keep the canvas independent of its intrinsic bitmap dimensions. */
 .arena-wrap {
   position: relative;
-  background: #111b25;
+  background: #04070f;
 }
 #arena {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
+  transform: translateZ(0);
+  will-change: transform;
 }
 .speed-setting {
   margin: 18px 0 22px;
@@ -580,9 +583,9 @@ input[type="range"] {
   font-variant-numeric: tabular-nums;
 }
 .speed-options button[aria-pressed="true"] {
-  background: #d8cfba;
+  background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
   border-color: #e4dbc6;
-  color: #1a2730;
+  color: #020617;
 }
 
 /* v0.3: menu density changes are scoped to overlays; the play arena is unchanged. */
@@ -616,7 +619,8 @@ input[type="range"] {
   position: sticky;
   top: -1px;
   z-index: 1;
-  background: #17232e;
+  background: rgba(10,15,25,0.85);
+  backdrop-filter: blur(16px);
   padding: 4px 0 10px;
 }
 .pause-card {
@@ -715,8 +719,8 @@ input[type="range"] {
   border-color: transparent;
 }
 #editor-play {
-  background: #d8cfba;
-  color: #1a2730;
+  background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+  color: #020617;
 }
 .editor-status {
   font-size: 10px;
@@ -736,10 +740,11 @@ input[type="range"] {
   justify-content: center;
   gap: 0;
   flex-wrap: wrap;
-  background: #17232eeb;
-  border: 1px solid #ffffff16;
+  background: rgba(15,23,42,0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.06);
   border-radius: 16px;
-  box-shadow: 0 10px 24px #0004;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.5);
 }
 .orb-palette button {
   padding: 0;
@@ -864,7 +869,7 @@ input[type="range"] {
   font-size: 11px;
   color: var(--muted);
   margin-top: 18px;
-  font-weight: 600;
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
@@ -876,7 +881,7 @@ input[type="range"] {
   align-items: center;
   justify-content: center;
   border: 1px solid #ffffff12;
-  border-radius: 12px;
+  border-radius: 99px;
   background: #ffffff06;
   transition: transform 0.1s, background 0.2s;
   padding: 10px 0;
@@ -898,5 +903,7 @@ input[type="range"] {
 .levels-card {
   max-width: 460px;
 }
+
+
 
 

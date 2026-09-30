@@ -29,26 +29,26 @@
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.globalAlpha = 1;
       ctx.globalCompositeOperation = "source-over";
-      ctx.fillStyle = "#111b25";
+      ctx.fillStyle = "#04070f";
       ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
       ctx.setTransform(this.scaleX, 0, 0, this.scaleY, 0, 0);
-      const bg = ctx.createRadialGradient(185, 290, 25, 190, 300, 370);
-      bg.addColorStop(0, "#1d2d3a");
-      bg.addColorStop(1, "#101923");
+      const bg = ctx.createRadialGradient(a.width/2, a.height/2, 0, a.width/2, a.height/2, 400);
+      bg.addColorStop(0, "#0f1b2d");
+      bg.addColorStop(1, "#04070f");
       ctx.fillStyle = bg;
       ctx.fillRect(0, 0, a.width, a.height);
       this.core(s);
       // Fine play boundary, not a tiled surface.
-      ctx.strokeStyle = "rgba(196,214,228,.09)";
-      ctx.lineWidth = 0.7;
+      ctx.strokeStyle = "rgba(215, 230, 245, 0.08)";
+      ctx.lineWidth = 0.8;
       ctx.beginPath();
       ctx.roundRect(15, 15, a.width - 30, a.height - 30, 28);
       ctx.stroke();
       for (let i = 0; i < 22; i++) {
         const x = 25 + ((i * 137.4) % 340),
           y = 30 + ((i * 81.37) % 560);
-        ctx.globalAlpha = 0.08 + 0.04 * Math.sin(s.time * 0.4 + i);
-        ctx.fillStyle = "#cad8e3";
+        ctx.globalAlpha = 0.04 + 0.04 * Math.sin(s.time * 0.4 + i);
+        ctx.fillStyle = "rgba(255,255,255,0.15)";
         circle(ctx, x, y, 0.7);
         ctx.fill();
       }
@@ -140,21 +140,21 @@
       for (let i = 0; i < 3; i++) {
         const angle =
             (i * TAU) / 3 +
-            s.time * (R.Config.effects.reducedMotion ? 0 : 0.025),
-          cx = x + Math.cos(angle) * 25,
-          cy = y + Math.sin(angle) * 35;
-        const glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, 98 + pulse);
+            s.time * (R.Config.effects.reducedMotion ? 0 : 0.08);
+        const cx = x + Math.cos(angle) * 18,
+          cy = y + Math.sin(angle) * 18;
+        const glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, 120 + pulse);
         const color = colors.length
           ? colors[Math.floor((i * colors.length) / 3) % colors.length]
-          : ["#728698", "#6f839c", "#799598"][i];
+          : ["#475569", "#334155", "#475569"][i];
         glow.addColorStop(0, color);
         glow.addColorStop(1, "transparent");
-        ctx.globalAlpha = 0.045 + fill * 0.1;
+        ctx.globalAlpha = 0.035 + fill * 0.08;
         ctx.fillStyle = glow;
-        ctx.fillRect(cx - 110, cy - 110, 220, 220);
+        ctx.fillRect(cx - 130, cy - 130, 260, 260);
       }
       const center = ctx.createRadialGradient(x, y, 0, x, y, 50);
-      center.addColorStop(0, "#efdfbb");
+      center.addColorStop(0, "#e2e8f0");
       center.addColorStop(1, "transparent");
       ctx.fillStyle = center;
       ctx.globalAlpha = 0.015 + fill * 0.14;
@@ -189,7 +189,7 @@
         r = o.r * (lift ? 1.1 : 1);
       ctx.save();
       ctx.translate(o.x, o.y);
-      ctx.fillStyle = "rgba(0,0,0,.19)";
+      ctx.fillStyle = "rgba(0,0,0,.4)";
       ctx.beginPath();
       ctx.ellipse(0, lift ? 10 : 5, r * 0.95, r * 0.65, 0, 0, TAU);
       ctx.fill();
@@ -204,9 +204,9 @@
         ctx.globalAlpha = 1;
       }
       const g = ctx.createLinearGradient(-r, -r, r, r);
-      g.addColorStop(0, spent ? "#38414a" : color);
-      g.addColorStop(0.6, spent ? "#222b36" : color + "b8");
-      g.addColorStop(1, "#1a2734");
+      g.addColorStop(0, spent ? "#1e293b" : color);
+      g.addColorStop(0.6, spent ? "#0f172a" : color + "b8");
+      g.addColorStop(1, "#020617");
       ctx.fillStyle = g;
       circle(ctx, 0, 0, r);
       ctx.fill();
@@ -219,7 +219,7 @@
           0,
           r * 0.9,
         );
-        inner.addColorStop(0, color + "44");
+        inner.addColorStop(0, color + "66");
         inner.addColorStop(1, "transparent");
         ctx.fillStyle = inner;
         circle(ctx, 0, 0, r * 0.9);
@@ -246,12 +246,12 @@
         ctx.arc(-1, -1, r - 2.5, 3.6, 4.9);
         ctx.stroke();
       }
-      ctx.globalAlpha = spent ? 0.19 : 0.75;
+      ctx.globalAlpha = spent ? 0.19 : 0.85;
       ctx.strokeStyle = charging
-        ? "#fff8ed"
+        ? "#ffffff"
         : color === "#dddce9"
-          ? "#f7f1ff"
-          : "#fff4df";
+          ? "#ffffff"
+          : "#f8fafc";
       ctx.lineWidth = 1.1;
       const symbol = t.symbol;
       ctx.beginPath();
@@ -340,9 +340,11 @@
         );
         ctx.stroke();
       } else if (e.name === "collision") {
+        ctx.lineWidth = 1.5 * (1 - t) + 0.5;
         circle(ctx, e.x, e.y, 2 + t * 9);
         ctx.stroke();
       } else if (e.name === "ability" || e.name === "burst") {
+        ctx.lineWidth = 2 * (1 - t) + 0.5;
         if (["green", "gold"].includes(e.type)) {
           circle(ctx, e.x, e.y, 8 + t * 13);
           ctx.stroke();
