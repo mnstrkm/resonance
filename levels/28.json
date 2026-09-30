@@ -1,0 +1,28 @@
+﻿{
+  "format": "resonanz-level",
+  "formatVersion": 1,
+  "gameVersion": "0.3.1",
+  "name": "Level 35",
+  "arena": { "width": 390, "height": 620, "padding": 24 },
+  "layout": {
+    "seed": 5035,
+    "count": 9,
+    "orbs": [
+      { "id": 0, "type": "violet", "x": 155, "y": 285 },
+      { "id": 1, "type": "orange", "x": 245, "y": 320 },
+      { "id": 2, "type": "pearl", "x": 110, "y": 210 },
+      { "id": 3, "type": "pearl", "x": 195, "y": 195 },
+      { "id": 4, "type": "pearl", "x": 285, "y": 240 },
+      { "id": 5, "type": "pearl", "x": 210, "y": 410 },
+      { "id": 6, "type": "pearl", "x": 130, "y": 385 },
+      { "id": 7, "type": "red", "x": 65, "y": 465 },
+      { "id": 8, "type": "blue", "x": 300, "y": 410 }
+    ]
+  },
+  "rules": { "impulses": 3, "target": "all" },
+  "balance": {
+    "gameplay": { "minOrbs": 5, "maxOrbs": 20, "impulses": 3, "requiredRatio": 1, "chargeTime": 0.5, "orbRadius": 13, "moveRadius": 64, "minDrag": 9, "hitRadius": 25, "coreEnergy": 1 },
+    "abilities": { "red": { "radius": 100, "force": 150 }, "blue": { "radius": 100, "force": 125 }, "violet": { "radius": 100, "force": 100, "burstForce": 145, "pullTime": 0.34 }, "green": { "radius": 175, "force": 70, "recoil": 34, "speed": 420 }, "gold": { "searchTime": 0.34, "travelTime": 0.5 }, "orange": { "radius": 70, "multiplier": 1.65, "rangeMultiplier": 1.15 } },
+    "physics": { "step": 0.008333333333333333, "maxFrame": 0.05, "damping": 1.9, "restitution": 0.64, "stopSpeed": 2.8, "settleTime": 0.28, "maxSpeed": 280, "collisionThreshold": 22, "collisionCooldown": 0.13 }
+  }
+}
