@@ -2,7 +2,7 @@
 
 **Ein Impuls kann eine ganze Kettenreaktion auslösen.** Resonanz ist ein Browser-Spiel über Orbs mit unterschiedlichen Fähigkeiten, gleitende Bewegung und das Zusammenspiel ihrer Effekte. Verschiebe einen Orb, beobachte die Reaktion und versuche, mit höchstens drei Impulsen die Energie aller Orbs zum Core zu bringen.
 
-**[Jetzt Resonanz spielen](https://mnstrkm.github.io/resonance/)** · [Quellcode](https://github.com/mnstrkm/resonance) · Version **0.5.0**
+**[Jetzt Resonanz spielen](https://mnstrkm.github.io/resonance/)** · [Quellcode](https://github.com/mnstrkm/resonance) · Version **0.6.0**
 
 Das Spiel läuft im Browser auf Geräten mit Touch oder Maus. Eine Installation ist nicht erforderlich.
 
@@ -18,9 +18,9 @@ Ungültige Platzierungen verbrauchen keinen Impuls. Die Anleitung mit den Orb-F�
 
 Nach dem Klick auf **Spiel starten** stehen drei Modi zur Auswahl:
 
-- **Level**: Nacheinander freischaltbare, handgefertigte Herausforderungen. In den ersten Leveln werden die Mechaniken der einzelnen Orbs schrittweise durch interaktive Tutorials erklärt. Sammle bis zu 3 Sterne pro Level, abhängig von den benötigten Impulsen (1 Impuls = 3 Sterne, 2 Impulse = 2 Sterne, 3 Impulse = 1 Stern).
+- **Level**: 50 nacheinander freischaltbare, handgefertigte Herausforderungen. In den ersten Leveln werden die Mechaniken der einzelnen Orbs schrittweise durch interaktive Tutorials erklärt. Sammle bis zu 3 Sterne pro Level, abhängig von den benötigten Impulsen (1 Impuls = 3 Sterne, 2 Impulse = 2 Sterne, 3 Impulse = 1 Stern).
 - **Zufall**: Der klassische Endlosmodus mit prozedural generierten Feldern und teilbaren Feld-Codes.
-- **Eigenes Feld**: Der integrierte Level-Editor zum freien Gestalten, Testen und Exportieren eigener Aufbauten.
+- **Eigenes Feld**: Der integrierte Level-Editor zum freien Gestalten, Testen, Importieren und Exportieren eigener Aufbauten.
 
 ## Die Orbs
 
@@ -38,8 +38,9 @@ Nach dem Klick auf **Spiel starten** stehen drei Modi zur Auswahl:
 
 Über **Eigenes Feld** im Hauptmenü kannst du Orbs platzieren, verschieben und deinen Aufbau direkt spielen. Beim Testen bleibt der Entwurf erhalten; du kannst erneut spielen oder zum Editor zurückkehren. Der letzte Entwurf wird lokal in diesem Browser gespeichert. Er wird nicht zwischen Geräten synchronisiert und kann beim Löschen der Websitedaten verloren gehen.
 
+- **Import & Export**: Über die Werkzeugleiste können Level-Dateien im standardisierten JSON-Format direkt vom Gerät geladen (Upload) oder heruntergeladen (Download) werden.
 - **Hilfslinien**: Im Editor können kreisförmige und lineare Hilfslinien platziert werden, an denen Orbs beim Verschieben sanft einrasten. Jede Hilfslinie besitzt separate, intuitive Anfasser zum Verschieben (Mittelpunkt), Skalieren (Quadrat) und Drehen (Kreis mit Achspunkt).
-- **Rückgängig-Funktion**: Änderungen an Orbs und Hilfslinien lassen sich über die Rückgängig-Schaltfläche schrittweise zurücknehmen.
+- **Rückgängig & getrenntes Löschen**: Änderungen an Orbs und Hilfslinien lassen sich über die Rückgängig-Schaltfläche schrittweise zurücknehmen. Orbs und Hilfslinien können zudem separat voneinander zurückgesetzt werden.
 
 ---
 
@@ -74,13 +75,14 @@ Die Zielzahl für **Eigenes Feld** entspricht unabhängig von `requiredRatio` im
 - Eigene Sounddateien: [assets/sounds/SOUNDS.md](assets/sounds/SOUNDS.md) enthält Dateinamen und Hinweise. **Hintergrundmusik** kann im Ordner `assets/music/` abgelegt (z. B. im bandbreitenschonenden `.opus`-Format oder als `.mp3`) und in der Datei `assets/music/playlist.json` registriert werden. Das Spiel spielt diese fortlaufend ab. [js/audio.js](js/audio.js) ordnet Sounddateien und Einzel-Lautstärken (`SoundAssets`) zu; `Config.audio` in `config.js` steuert die Gruppenlautstärken. Ohne eigene Aufnahmen verwendet das Spiel synthetische Vorschauklänge.
 - Herkunft und Lizenzen neuer Assets in [ASSET_LICENSES.md](ASSET_LICENSES.md) ergänzen.
 
-### Eigene Level als JSON sichern
+### Eigene Level als JSON verwalten (Export & Import)
 
-**[Editor mit JSON-Export öffnen](https://mnstrkm.github.io/resonance/?creator=1)** → im Hauptmenü **Eigenes Feld** wählen → Aufbau erstellen → Download-Symbol im Editor drücken. Nur dieser bewusste Klick lädt eine JSON-Datei herunter; die normale Editoransicht speichert Entwürfe lediglich lokal im Browser.
+Im Editor (**Eigenes Feld**) stehen Schaltflächen zum **Exportieren** (Download) und **Importieren** (Upload) von Level-Dateien direkt zur Verfügung.
 
-Die JSON-Datei enthält unter anderem Positionen und Typen der Orbs, den Seed sowie Spiel- und Balanceinformationen. Du kannst diese Dateien im Ordner `levels/` als `01.json`, `02.json` usw. ablegen. Das Spiel erkennt bis zu 50 solcher Level automatisch über [js/level-loader.js](js/level-loader.js) und schaltet sie im neuen **Level-Modus** frei. Fehlt eine fortlaufende Datei, wird der Level-Platz als gesperrt markiert.
+- **Exportieren**: Lädt den aktuellen Entwurf als JSON-Datei herunter.
+- **Importieren**: Liest eine vorhandene Level-Datei ein, prüft Format, Orb-Positionen und Regeln und lädt das Feld unmittelbar zur Bearbeitung und zum Spielen in den Editor.
 
-`?creator=1` blendet lediglich die Export-Schaltfläche ein und ist **kein Zugangsschutz**. Wer den Link kennt, kann die Funktion ebenfalls verwenden.
+Die JSON-Datei enthält unter anderem Positionen und Typen der Orbs, den Seed sowie Spiel- und Balanceinformationen. Du kannst diese Dateien im Ordner `levels/` als `01.json`, `02.json` bis `50.json` ablegen. Das Spiel erkennt bis zu 50 solcher Level automatisch über [js/level-loader.js](js/level-loader.js) und schaltet sie im **Level-Modus** frei. Fehlt eine fortlaufende Datei, wird der Level-Platz als gesperrt markiert.
 
 ### Versionen und Änderungen
 

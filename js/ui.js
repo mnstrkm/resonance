@@ -1,5 +1,5 @@
 (function (R) {
-  R.version = "0.5.0";
+  R.version = "0.6.0";
   const $ = (id) => document.getElementById(id);
   const paths = {
     home: '<path d="m3 10 9-7 9 7M5 9v11h5v-6h4v6h5V9"/>',

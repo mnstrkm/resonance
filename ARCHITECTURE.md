@@ -73,17 +73,18 @@ Alle Sounddateien sind optional. Fehler beim Laden unterbrechen das Spiel nicht.
 
 Audio wird durch „Spiel starten“ freigeschaltet. Eine Kompressionsstufe und eine Stimmenbegrenzung verhindern Überlagerungen unbegrenzt vieler Klänge; sie ersetzen kein professionelles Sound-Mastering. Pause/Retry stoppen laufende Stimmen. Der Core-Erfolg besteht aus Voll-Ladung und späterer Abschlusswelle.
 
-## Editor, Leveldateien und Navigation (v0.3.0)
+## Editor, Leveldateien und Navigation (v0.6.0)
 
 - `level-data.js`: prüft Typen, endliche Koordinaten, Arena-Grenzen und Überschneidungen. Versioniertes Exportformat `resonanz-level`, `formatVersion: 1`.
-- `editor.js`: hält den Entwurf getrennt vom simulierten Zustand; Platzieren/Verschieben, Rückgängig, lokaler letzter Entwurf und bewusst ausgelöster Download. Es gibt keine automatischen Dateidownloads.
+- `level-loader.js`: lädt die Kampagnen-Level asynchron aus `levels/01.json` bis `levels/50.json`, validiert diese gegen `LevelData` und cacht sie für den Level-Modus.
+- `editor.js`: hält den Entwurf getrennt vom simulierten Zustand; Platzieren/Verschieben, Hilfslinien mit Anfassern, atomares Löschen, Rückgängig, lokaler letzter Entwurf sowie Import (`editor.importLayout`) und Export von JSON-Leveldateien.
 - `navigation.js`: History-Einträge für Hauptmenü, Editor, Spiel und Unterfenster. `popstate` rendert vorhandene Routen. Menüs erneut zu rendern legt keine neuen History-Einträge an.
-- `ui.js`: kompakte Editor-Werkzeuge, Navigation, identische Canvas-Orbs in Anleitung und Auswahl.
+- `ui.js`: zweizeilige Editor-Werkzeuge, Navigation, identische Canvas-Orbs in Anleitung und Auswahl.
 
 `Editor.snapshot()` wird beim Probespielen kopiert. `Game.retry()` nutzt wie bisher den Ausgangssnapshot. Simulation, zufällige Zielwahl und Bewegung verändern nie den Editor-Entwurf. Der Modus `editor` übernimmt die normalen Regeln und setzt `requiredEnergy(count)` explizit auf die Orb-Anzahl.
 
 Die JSON-Datei enthält den Ausgangsaufbau als `layout` (Seed und Positionen/Typen), Arena, Regeln sowie Versions- und Balanceinformationen. Der Seed hält insbesondere Golds zufällige Zielwahl reproduzierbar. Der normale kurze Feld-Code reicht für handgebaute Anordnungen nicht aus.
 
-Exportierte Dateien können später unter frei gewählten Namen, beispielsweise `levels/001.json`, ins Repository geladen werden. Noch liest das Spiel diesen Ordner nicht: Ein zukünftiger Level-Loader muss Format/Version prüfen und entscheiden, wie er mit abweichenden Balancewerten umgeht. Die gespeicherten Werte werden heute nicht automatisch in die Config übernommen. Die JSON-Dateien allein beweisen auch nicht, dass ein Feld lösbar ist.
+Level-Dateien liegen standardisiert unter `levels/01.json` bis `levels/50.json` im Repository und werden beim Spielstart automatisch von `LevelLoader` geladen und verifiziert. Zudem können beliebige kompatible Leveldateien jederzeit direkt im Editor importiert und weiterbearbeitet werden.
 
 Der letzte Entwurf liegt unter `resonance.editor.draft.v1` in `localStorage`. Das ist eine Browser-Speicherung ohne sichtbare Dateien auf dem Handy. Bei gesperrtem Speicher funktioniert Bearbeiten weiter; die UI weist auf die begrenzte Lebensdauer hin. Rückgängig-Verlauf und laufende Proberunden werden nicht dauerhaft gespeichert.
