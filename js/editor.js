@@ -10,8 +10,8 @@
       this.type = null;
       this.drag = null;
       this.availableStorage = true;
-      this.creator =
-        new URLSearchParams(location.search).get("creator") === "1";
+      this.statusMessage = null;
+      this.creator = true;
       try {
         const data = localStorage.getItem(KEY);
         if (data)
@@ -35,6 +35,7 @@
       }
     }
     remember() {
+      this.statusMessage = null;
       this.history.push({ layout: copy(this.layout), guides: copy(this.guides || []) });
       if (this.history.length > 40) this.history.shift();
     }
@@ -111,6 +112,49 @@
       a.click();
       a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+    importLayout(data) {
+      let target = data;
+      if (typeof data === "string") {
+        try {
+          target = JSON.parse(data);
+        } catch (_) {
+          return { success: false, error: "Ungültiges JSON-Format." };
+        }
+      }
+      if (!target || typeof target !== "object") {
+        return { success: false, error: "Ungültige Datei." };
+      }
+      const candidate = target.layout || target;
+      if (!candidate || !Array.isArray(candidate.orbs)) {
+        return { success: false, error: "Keine Orbs im Layout gefunden." };
+      }
+      const seed =
+        Number.isInteger(candidate.seed) &&
+        candidate.seed >= 0 &&
+        candidate.seed <= 4294967295
+          ? candidate.seed
+          : R.createSeed();
+      const clean = R.LevelData.validate({
+        seed,
+        orbs: candidate.orbs,
+      });
+      if (!clean) {
+        return { success: false, error: "Ungültige Orb-Positionen oder -Typen." };
+      }
+      this.remember();
+      this.layout = clean;
+      this.selected = null;
+      this.type = null;
+      if (Array.isArray(target.guides)) {
+        this.guides = copy(target.guides);
+      } else if (Array.isArray(candidate.guides)) {
+        this.guides = copy(candidate.guides);
+      } else {
+        this.guides = [];
+      }
+      this.changed();
+      return { success: true, name: target.name || null };
     }
     addGuide(type) {
       this.remember();

@@ -154,8 +154,18 @@ async function setup(search = "") {
   assert.equal(g.ui.nav.route.screen, "editor");
   assert.equal(g.ui.nav.depth, 1);
   assert.equal(g.editor.layout.count, 0);
-  assert(w.document.getElementById("editor-play").disabled);
-  assert.equal(w.document.getElementById("editor-export"), null);
+  assert(w.document.getElementById("editor-export"));
+  assert(w.document.getElementById("editor-import"));
+  assert(w.document.getElementById("editor-export").disabled);
+  const testImport = g.editor.importLayout({
+    name: "Test Level",
+    layout: { seed: 1234, orbs: [{ type: "red", x: 195, y: 310 }] }
+  });
+  assert(testImport.success);
+  assert.equal(g.editor.layout.count, 1);
+  assert.equal(g.editor.layout.orbs[0].type, "red");
+  g.editor.reset();
+  assert.equal(g.editor.layout.count, 0);
   await click("palette-toggle");
   const green = w.document.querySelector('[data-type="green"]');
   // Palette overlaps the arena: tapping must select, never place an orb underneath.
