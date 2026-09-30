@@ -77,9 +77,10 @@
       this.changed();
     }
     reset() {
-      if (!this.layout.count) return;
+      if (!this.layout.count && (!this.guides || !this.guides.length)) return;
       this.remember();
       this.layout.orbs = [];
+      this.guides = [];
       this.selected = null;
       this.changed();
     }
@@ -164,6 +165,7 @@
       this.refresh();
     }
     resetGuides() {
+      if (!this.guides || !this.guides.length) return;
       this.remember();
       this.guides = [];
       this.refresh();

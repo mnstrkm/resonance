@@ -599,7 +599,7 @@
           };
         });
       $("editor-undo").onclick = () => { this.game.audio.play("ui-click"); editor.undo(); };
-      $("editor-reset").onclick = () => { this.game.audio.play("ui-click"); editor.reset(); editor.resetGuides(); };
+      $("editor-reset").onclick = () => { this.game.audio.play("ui-click"); editor.reset(); };
       $("guide-line").onclick = () => { this.game.audio.play("ui-click"); editor.addGuide("line"); };
       $("guide-circle").onclick = () => { this.game.audio.play("ui-click"); editor.addGuide("circle"); };
       $("editor-reset-guides").onclick = () => { this.game.audio.play("ui-click"); editor.resetGuides(); };
@@ -655,7 +655,7 @@
       if (!e || !$("editor-play")) return;
       $("editor-play").disabled = !e.layout.count;
       $("editor-undo").disabled = !e.history.length;
-      $("editor-reset").disabled = !e.layout.count;
+      $("editor-reset").disabled = !e.layout.count && (!e.guides || !e.guides.length);
       $("editor-reset-guides").hidden = !e.guides || !e.guides.length;
       $("editor-delete").hidden = e.selected === null;
       if ($("editor-export")) $("editor-export").disabled = !e.layout.count;
